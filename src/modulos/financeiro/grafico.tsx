@@ -1,10 +1,10 @@
 "use client";
 
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, ComposedChart, Line, YAxis, CartesianGrid } from "recharts";
 import { useTheme } from "@mui/material";
-import { ResumoPorGrupo } from "../../app/dashboard/components/financeiroService";
-import { useFinanceiro } from "./useFinanceiro";
-import { ApiResponse } from "@/types/apiResponse";
+
+import { UseFinanceiro } from "../../features/financeiro/use.financeiro";
+import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
 
 interface customTooltipProps {
   active?: boolean;
@@ -18,7 +18,7 @@ const CustomTooltip = ({ active, payload }: customTooltipProps) => {
     return (
       <div
         style={{
-          background: "#fff",
+          background: "rgba(255,255,255,0.9)",
           padding: "10px",
           borderRadius: "8px",
         }}
@@ -45,12 +45,21 @@ const CustomTooltip = ({ active, payload }: customTooltipProps) => {
 
 export function GraficoFinanceiro() {
   const theme = useTheme();
-  const { data }: { data: ApiResponse<ResumoPorGrupo[]> } = useFinanceiro();
-  console.log("Dados para o gráfico:", data); // Verifique os dados no console
+  const { data }: { data: ResumoPorGrupo[] } = UseFinanceiro();
+   const dataComPercentual = data.map((item) => ({
+    ...item,
+    percentual: item.orcado
+      ? (item.realizado / item.orcado) * 100
+      : 0,
+  }));
+  
+  console.log("Dados para o gráfico:", data);
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data.data}>
+      <ComposedChart data={dataComPercentual}>
+
+       {/* <BarChart data={data}> */}
         <XAxis
           dataKey="id"
           stroke={theme.palette.text.primary}
@@ -58,6 +67,7 @@ export function GraficoFinanceiro() {
           textAnchor="end"
           interval={0}
         />
+      
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey="orcado" fill={theme.palette.primary.main} name="orçado" />
         <Bar
@@ -65,7 +75,16 @@ export function GraficoFinanceiro() {
           fill={theme.palette.secondary.main}
           name="realizado"
         />
-      </BarChart>
+      {/* </BarChart> */}
+      <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="percentual"
+          stroke="#22c55e"
+          name="% Execução"
+          strokeWidth={2}
+        />
+      </ComposedChart>
     </ResponsiveContainer>
   );
 }

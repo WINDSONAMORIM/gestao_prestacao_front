@@ -13,6 +13,17 @@ export function VariacaoPieChart({ orcado, executado }: Props) {
   const theme = useTheme();
   // const restante = Math.max(orcado - executado, 0);
   const percentual = (executado / orcado) * 100;
+  const variacao = ((executado - orcado) / orcado) * 100;
+
+  const isPositivo = variacao > 0;
+  const isNegativo = variacao < 0;
+  const arrow = isPositivo ? "▲" : isNegativo ? "▼" : "";
+
+  const corVariacao = isPositivo
+    ? theme.palette.error.main
+    : isNegativo
+      ? theme.palette.success.main
+      : theme.palette.text.secondary;
 
   const [animatedValue, setAnimatedValue] = useState(0);
 
@@ -67,8 +78,8 @@ export function VariacaoPieChart({ orcado, executado }: Props) {
           </defs>
         </svg>
         <Gauge
-          // value={executado}
-          value={animatedValue}
+          value={executado}
+          // value={animatedValue}
           valueMax={orcado}
           startAngle={-110}
           endAngle={110}
@@ -76,18 +87,20 @@ export function VariacaoPieChart({ orcado, executado }: Props) {
           outerRadius={"100%"}
           sx={{
             [`& .MuiGauge-valueArc`]: {
-              fill: "url(#gaugeGradient)",
-              // fill: theme.palette.realizado.main,
+              // fill: "url(#gaugeGradient)",
+              fill: theme.palette.realizado.main,
             },
             [`& .MuiGauge-referenceArc`]: {
               fill: theme.palette.orcado.main,
             },
-            "& .MuiGauge-valueText": {
+            "& .MuiGauge-valueText text": {
+              fill: corVariacao,
+              fontWeight: 700,
               fontSize: 14,
               transform: "translate(0px, -10px)",
             },
           }}
-          text={`${percentual.toFixed(1)}%`}
+           text={`${arrow} ${percentual.toFixed(1)}%`}
         />
       </Card>
     </>

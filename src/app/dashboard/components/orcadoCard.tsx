@@ -17,7 +17,7 @@ export const OrcadoCard = ({ callback, title, backgroundColor, imageSrc }: Orcad
   return (
     <Card
       sx={{
-        borderRadius: 3,
+        borderRadius: "16px",
         boxShadow: 3,
         display: "flex",
         alignItems: "center",

@@ -10,19 +10,31 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-// import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { useFinanceiro } from "@/modulos/financeiro/useFinanceiro";
-import {
-  ResumoPorGrupo,
-} from "../../app/dashboard/components/financeiroService";
-import { ApiResponse } from "@/types/apiResponse";
+
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
+import { UseFinanceiro } from "@/features/financeiro/use.financeiro";
+import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
+import { fetchResumoPorSubGrupo } from "@/features/financeiro/financeiro.providers";
+import { Typography } from "@mui/material";
 
 function Row(props: { row: ResumoPorGrupo; index: number }) {
   const { row, index } = props;
   const [open, setOpen] = React.useState(false);
+  const [subGrupos, setSubGrupos] = React.useState<ResumoPorGrupo[]>([])
+
+  React.useEffect(()=>{
+    if(open && subGrupos.length === 0){
+      fetchResumoPorSubGrupo().then((data)=>{
+        const filtrados = data.filter((sub)=>
+        sub.id.startsWith(row.id)
+      );
+      setSubGrupos(filtrados)
+      });
+    }
+  },[open]);
 
   return (
     <React.Fragment>
@@ -37,12 +49,11 @@ function Row(props: { row: ResumoPorGrupo; index: number }) {
         })}
       >
         <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
+          <IconButton 
             onClick={() => setOpen(!open)}
+            size="small"
           >
-            {/* {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />} */}
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
@@ -67,17 +78,27 @@ function Row(props: { row: ResumoPorGrupo; index: number }) {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                Descrição
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{row.descricao}</TableCell>
-                  </TableRow>
-                </TableHead>
-              </Table>
-            </Box>
+              {subGrupos.map((sub)=>(
+                <Box
+                  key={sub.id}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    py: 0.5,
+                    borderBottom: "1px solid rgba(0,0,0,0.05)",
+                  }}
+                >
+                  <Typography variant="caption" >{sub.id} - {sub.descricao}</Typography>
+
+                  <Typography variant="caption" >
+                    {sub.realizado.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
+                  </Typography>
+              </Box>
+              ))}
+              </Box>
           </Collapse>
         </TableCell>
       </TableRow>
@@ -86,17 +107,11 @@ function Row(props: { row: ResumoPorGrupo; index: number }) {
 }
 
 export default function CollapsibleTable() {
-  const {
-    data,
-    loading,
-  }: {
-    data: ApiResponse<ResumoPorGrupo[]>;
-    loading: boolean;
-  } = useFinanceiro();
+  const {data,loading}:{data: ResumoPorGrupo[]; loading: boolean; } = UseFinanceiro();
   return (
     <TableContainer
       component={Paper}
-      sx={{ maxWidth: 400, ml: 3, boxShadow: 3 }}
+      sx={{ maxWidth: 400, ml: 3, boxShadow: "none", background: "transparent"  }}
     >
       <Table
         size="small"
@@ -116,11 +131,10 @@ export default function CollapsibleTable() {
             <TableCell>Grupo</TableCell>
             <TableCell align="right">Orçado</TableCell>
             <TableCell align="right">Realizado</TableCell>
-            {/* <TableCell align="right">Diferença</TableCell> */}
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.data?.map((row, index) => (
+          {data?.map((row, index) => (
             <Row key={row.id} row={row} index={index} />
           ))}
         </TableBody>

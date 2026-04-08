@@ -36,17 +36,16 @@ const dashboard = () => {
           <OrcadoCard title="Total Realizado" callback={realizadoTotal} />
         </Grid>
       </Grid>
-      <Grid container>
+      <Grid container spacing={4} padding={4}>
+          <Paper sx={{ width:"100%", p: 2, height: 400, boxShadow: 3, borderRadius: 2, display:"flex"}}
+          >
+        <Grid size={{ xs: 12, md: 8 }}>
+            <GraficoFinanceiro />
+        </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <CollapsibleTable />
         </Grid>
-        <Grid size={{ xs: 12, md: 8 }}>
-          <Paper
-            sx={{ p: 2, height: 400, margin: 4, boxShadow: 3, borderRadius: 2 }}
-          >
-            <GraficoFinanceiro />
-          </Paper>
-        </Grid>
+        </Paper>
       </Grid>
     </>
   );
