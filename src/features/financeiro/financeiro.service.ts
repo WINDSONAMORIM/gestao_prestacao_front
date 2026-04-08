@@ -1,12 +1,8 @@
 import { ApiResponse } from "@/types/apiResponse";
-import { connection } from "../../../service/connection";
+import { connection } from "../../service/connection";
+import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
 
-export interface ResumoPorGrupo {
-  id: string;
-  descricao: string;
-  orcado: number;
-  realizado: number;
-}
+
 
 export const getResumoPorGrupo = async (): Promise<
   ApiResponse<ResumoPorGrupo[]>
