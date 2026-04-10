@@ -1,14 +1,14 @@
-import { ResumoPorGrupoResponse } from "./financeiro.types";
+import { ResumoPorGrupoResponse, TendenciaPorGrupoResponse } from "./financeiro.types";
 
 export const getResumoPorGrupoMock: () => ResumoPorGrupoResponse = () => {
     return {
         statusCode: 200,
         success: true,
         message: "Resumo por Grupo obtido com sucesso (mock)",
-        data: [{ id: "01", descricao: "PESSOAL E REFLEXO", orcado: 107606256.60, realizado: 18122606.56 },
+        data: [{ id: "01", descricao: "PESSOAL E REFLEXO", orcado: 10606256.60, realizado: 18122606.56 },
         { id: "02", descricao: "MATERIAL DE CONSUMO", orcado: 8417036.88, realizado: 2097368.42 },
         { id: "03", descricao: "MATERIAL DE CONSUMO ASSISTENCIAL", orcado: 13225752.84, realizado: 1986297.16 },
-        { id: "04", descricao: "SERVIÇOS DE TERCEIROS", orcado: 148628269.32, realizado: 26410705.76 },
+        { id: "04", descricao: "SERVIÇOS DE TERCEIROS", orcado: 14628269.32, realizado: 26410705.76 },
         { id: "05", descricao: "MANUTENCAO", orcado: 7126023.24, realizado: 1004397.00 },
         { id: "08", descricao: "LOCACAO", orcado: 12355595.40, realizado: 1566722.39 },
         { id: "09", descricao: "DESPESAS DIVERSAS", orcado: 6806641.80, realizado: 1177490.19 },
@@ -46,5 +46,47 @@ export const getResumoPorSubgrupoMock: () => ResumoPorGrupoResponse = () => {
             { id: "09.03", descricao: "DESPESAS BANCARIAS", orcado: 0.0, realizado: 3091.88 },
             { id: "09.04", descricao: "OUTRAS DESPESAS", orcado: 0.0, realizado: 0.0 },
             { id: "10.01", descricao: "EMPRESTIMOS", orcado: 0.0, realizado: 279.09 }]
+    }
+}
+
+export const getTendenciaPorGrupo: () => TendenciaPorGrupoResponse = () => {
+    return {
+    statusCode: 200,
+    success: true,
+    message: "Tendencia por Grupo obtido com sucesso (mock)",
+    data: [
+        { grupo: "01", mes: 1, orcado: 8967188.05, realizado: 9045452.989999982 },
+        { grupo: "01", mes: 2, orcado: 8967188.05, realizado: 9077153.570000019 },
+        { grupo: "01", mes: 3, orcado: 8967188.05, realizado: 6836462.619999962 },
+        { grupo: "01", mes: 4, orcado: 8967188.05, realizado: 9045452.989999982 },
+        { grupo: "01", mes: 5, orcado: 8967188.05, realizado: 9077153.570000019 },
+        { grupo: "01", mes: 6, orcado: 8967188.05, realizado: 6836462.619999962 },
+        { grupo: "01", mes: 7, orcado: 8967188.05, realizado: 9045452.989999982 },
+        { grupo: "01", mes: 8, orcado: 8967188.05, realizado: 9077153.570000019 },
+        { grupo: "01", mes: 9, orcado: 8967188.05, realizado: 6836462.619999962 },
+        { grupo: "01", mes: 10, orcado: 8967188.05, realizado: 9045452.989999982 },
+        { grupo: "01", mes: 11, orcado: 8967188.05, realizado: 9077153.570000019 },
+        { grupo: "01", mes: 12, orcado: 8967188.05, realizado: 6836462.619999962 },
+        { grupo: "02", mes: 1, orcado: 0, realizado: 1081199.579999999 },
+        { grupo: "02", mes: 2, orcado: 0, realizado: 694221.2000000004 },
+        { grupo: "02", mes: 3, orcado: 0, realizado: 1002701.4400000004 },
+        { grupo: "03", mes: 1, orcado: 0, realizado: 5007778.609999999 },
+        { grupo: "03", mes: 2, orcado: 0, realizado: 4803532.94 },
+        { grupo: "03", mes: 3, orcado: 0, realizado: 2762351.74 },
+        { grupo: "04", mes: 1, orcado: 0, realizado: 8890508.45 },
+        { grupo: "04", mes: 2, orcado: 0, realizado: 8993784.51 },
+        { grupo: "04", mes: 3, orcado: 0, realizado: 8342504.740000004 },
+        { grupo: "05", mes: 1, orcado: 0, realizado: 506984.83 },
+        { grupo: "05", mes: 2, orcado: 0, realizado: 488218.83 },
+        { grupo: "05", mes: 3, orcado: 0, realizado: 457669.47 },
+        { grupo: "08", mes: 1, orcado: 0, realizado: 746785.17 },
+        { grupo: "08", mes: 2, orcado: 0, realizado: 662997.54 },
+        { grupo: "08", mes: 3, orcado: 0, realizado: 546795.5900000001 },
+        { grupo: "09", mes: 1, orcado: 0, realizado: 564007.57 },
+        { grupo: "09", mes: 2, orcado: 0, realizado: 596508.88 },
+        { grupo: "09", mes: 3, orcado: 0, realizado: 608106.19 },
+        { grupo: "10", mes: 1, orcado: 0, realizado: 195.64 },
+        { grupo: "10", mes: 3, orcado: 0, realizado: 83.45 }
+    ]
     }
 }

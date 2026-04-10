@@ -1,8 +1,6 @@
 import { ApiResponse } from "@/types/apiResponse";
 import { connection } from "../../service/connection";
-import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
-
-
+import { ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
 
 export const getResumoPorGrupo = async (): Promise<
   ApiResponse<ResumoPorGrupo[]>
@@ -10,7 +8,7 @@ export const getResumoPorGrupo = async (): Promise<
   const response = await connection.get("/financeiro");
   console.log("Resumo por grupo:", response.data);
   return response.data;
-};  
+};
 
 export const getVariacaoOrcadoRealizado = async (): Promise<
   ApiResponse<{ variacao: number }>
@@ -27,3 +25,9 @@ export const getExecucaoOrcadoRealizado = async (): Promise<
   console.log("Execucao Orçado x Realizado:", response.data);
   return response.data;
 };
+
+export const getTendenciaPorGrupo = async (): Promise<
+  ApiResponse<TendenciaPorGrupo[]>> => {
+  const response = await connection.get("/financeiro/tendencia");
+  return response.data
+}
