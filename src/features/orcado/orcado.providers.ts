@@ -2,7 +2,7 @@ import { getTotalOrcadoMock } from "@/features/orcado/orcado.mock";
 import { getTotalOrcado } from "@/features/orcado/orcado.service";
 import { OrcadoTotal } from "./orcado.types";
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export const fetchOrcadoTotal = async (): Promise<OrcadoTotal> => {
   if (USE_MOCK) {

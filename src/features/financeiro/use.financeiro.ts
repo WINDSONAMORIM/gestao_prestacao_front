@@ -1,45 +1,55 @@
-"use client"
+"use client";
 
-import { ResumoUI, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
+import {
+  ResumoUI,
+  TendenciaPorGrupo,
+} from "@/features/financeiro/financeiro.types";
 import { useQuery } from "@tanstack/react-query";
-import { fetchResumoPorGrupo, fetchResumoPorSubGrupo, fetchTendenciaPorGrupo } from "./financeiro.providers";
+import {
+  fetchResumoPorGrupo,
+  fetchResumoPorSubGrupo,
+  fetchTendenciaPorGrupo,
+} from "./financeiro.providers";
 import { useTheme } from "@mui/material";
 
-export const UseFinanceiro = () => {
-  const theme = useTheme()
-  const {data, isLoading} = useQuery<ResumoUI[]>({
-    queryKey:['resumoPorGrupo'],
-    queryFn: () => fetchResumoPorGrupo(theme)
-  })
-  return{
+export const UseFinanceiroResumoPorGrupo = () => {
+  const theme = useTheme();
+  const { data, isLoading } = useQuery<ResumoUI[]>({
+    queryKey: ["resumoPorGrupo"],
+    queryFn: () => fetchResumoPorGrupo(theme),
+  });
+  return {
     data: data ?? [],
-    loading:isLoading
-  }
-}
+    loading: isLoading,
+  };
+};
 
-export const UseFinanceiroSubGrupo = () => {
-  const theme = useTheme()
-  const {data, isLoading} = useQuery<ResumoUI[]>({
-    queryKey:['resumoPorSubGrupo'],
-    queryFn:() => fetchResumoPorSubGrupo(theme)
-  })
-  return{
+export const UseFinanceiroResumoPorSubGrupo = (groupId: string) => {
+  const theme = useTheme();
+  const { data, isLoading } = useQuery<ResumoUI[]>({
+    queryKey: ["resumoPorSubGrupo", groupId],
+    queryFn: () => fetchResumoPorSubGrupo(theme, groupId),
+    enabled: !!groupId,
+  });
+  return {
     data: data ?? [],
-    loading:isLoading
-  }
-}
+    loading: isLoading,
+  };
+};
 
-export const UseFinanceiroTendenciaPorGrupo = () =>{
-  const theme = useTheme()
-  const {data, isLoading} = useQuery<TendenciaPorGrupo[]>({
-    queryKey:['tendenciaPorGrupo'],
-    queryFn: () => fetchTendenciaPorGrupo()
-  })
-  return{
+export const UseFinanceiroTendenciaPorGrupo = (grupoId: string) => {
+  const theme = useTheme();
+  const { data, isLoading } = useQuery<TendenciaPorGrupo[]>({
+    queryKey: ["tendenciaPorGrupo", grupoId],
+    queryFn: () => fetchTendenciaPorGrupo(grupoId!),
+    enabled: !!grupoId,
+    placeholderData: (previousData) => previousData ?? [],
+  });
+  return {
     data: data ?? [],
-    loading: isLoading
-  }
-}
+    loading: isLoading,
+  };
+};
 
 // export function useFinanceiroVariacao() {
 //   const [data, setData] = useState<number | null>(null);

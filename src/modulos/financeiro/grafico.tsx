@@ -1,9 +1,9 @@
 "use client";
 
-import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, ComposedChart, Line, YAxis, CartesianGrid, Area, AreaChart } from "recharts";
+import { Bar, XAxis, Tooltip, ResponsiveContainer, ComposedChart, Line, YAxis, Area, AreaChart } from "recharts";
 import { useTheme } from "@mui/material";
 
-import { UseFinanceiro, UseFinanceiroTendenciaPorGrupo } from "../../features/financeiro/use.financeiro";
+import { UseFinanceiroResumoPorGrupo, UseFinanceiroTendenciaPorGrupo } from "../../features/financeiro/use.financeiro";
 import { ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
 import { meses } from "@/features/financeiro/financeiro.mapper";
 
@@ -24,7 +24,9 @@ const CustomTooltip = ({ active, payload }: customTooltipProps) => {
           borderRadius: "8px",
         }}
       >
-        <strong>{item.descricao}</strong>
+        <strong>
+        {item.descricao}
+         </strong>
         <br />
         Orçado:{" "}
         {item.orcado?.toLocaleString("pt-BR", {
@@ -46,15 +48,11 @@ const CustomTooltip = ({ active, payload }: customTooltipProps) => {
 
 export function GraficoFinanceiro({ selecionado, }: { selecionado: ResumoPorGrupo | null }) {
   const theme = useTheme();
-  const { data }: { data: ResumoPorGrupo[] } = UseFinanceiro();
-  const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo().data;
-
-  const tendenciaFiltrada = selecionado
-    ? tendencia.filter((item) => item.grupo === selecionado.id)
-    : [];
+  const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoPorGrupo();
+  const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo(selecionado?.id ?? "").data;
 
   const dataGrafico = meses.map((mes, index) => {
-    const registro = tendenciaFiltrada.find(t => t.mes === index + 1);
+    const registro = tendencia.find(t => Number(t.mes) === index + 1);
 
     return {
       mes,
@@ -74,32 +72,29 @@ export function GraficoFinanceiro({ selecionado, }: { selecionado: ResumoPorGrup
       : 0,
   }));
 
-  console.log("Dados para o gráfico:", data);
-
   if (selecionado) {
-    // 👉 GRÁFICO DE LINHA (DETALHE)
+    
     return (
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={dataGrafico}>
           <defs>
             <linearGradient id="colorRealizado" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#000046" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#1CB5E0" stopOpacity={0} />
+              <stop offset="5%" stopColor="#00E676" stopOpacity={0.9} />
+              <stop offset="95%" stopColor="#00E676" stopOpacity={0.1} />
             </linearGradient>
           </defs>
 
-          {/* <CartesianGrid strokeDasharray="3 3" /> */}
-
           <XAxis dataKey="mes" />
-          <YAxis tickFormatter={(value) =>
-            value >= 1_000_000
-              ? `${(value / 1_000_000).toFixed(1)}M`
-              : `${(value / 1_000).toFixed(0)}K`
-          } />
+          <YAxis
+            tickFormatter={(value) =>
+              value >= 1_000_000
+                ? `${(value / 1_000_000).toFixed(1)}M`
+                : `${(value / 1_000).toFixed(0)}K`
+            }
+          />
 
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
 
-          {/* ÁREA - REALIZADO 🔥 */}
           <Area
             type="monotone"
             dataKey="realizado"
@@ -109,12 +104,12 @@ export function GraficoFinanceiro({ selecionado, }: { selecionado: ResumoPorGrup
             name="Realizado"
           />
 
-          {/* LINHA - ORÇADO */}
           <Line
             type="monotone"
             dataKey="orcado"
-            stroke="#94a3b8"
+            stroke={theme.palette.orcado.main}
             strokeWidth={2}
+            strokeDasharray="6 4"
             dot={false}
             name="Orçado"
           />
@@ -126,7 +121,6 @@ export function GraficoFinanceiro({ selecionado, }: { selecionado: ResumoPorGrup
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart data={dataComPercentual}>
 
-        {/* <BarChart data={data}> */}
         <XAxis
           dataKey="id"
           stroke={theme.palette.text.primary}
@@ -136,18 +130,19 @@ export function GraficoFinanceiro({ selecionado, }: { selecionado: ResumoPorGrup
         />
 
         <Tooltip content={<CustomTooltip />} />
-        <Bar dataKey="orcado" fill={theme.palette.primary.main} name="orçado" />
+        <Bar dataKey="orcado" fill={theme.palette.orcado.main} name="orçado" />
         <Bar
           dataKey="realizado"
-          fill={theme.palette.secondary.main}
+          fill={theme.palette.realizado.main}
           name="realizado"
         />
-        {/* </BarChart> */}
+   
         <Line
           yAxisId="right"
+          orientation="right"
           type="monotone"
           dataKey="percentual"
-          stroke="#22c55e"
+          stroke={theme.palette.success.main}
           name="% Execução"
           strokeWidth={2}
         />

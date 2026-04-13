@@ -3,7 +3,7 @@ import { getTotalRealizado } from "./realizado.service";
 import { RealizadoTotal } from "./realizado.types";
 
 
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 export const fetchRealizadoTotal = async (): Promise<RealizadoTotal> => {
   if (USE_MOCK) {

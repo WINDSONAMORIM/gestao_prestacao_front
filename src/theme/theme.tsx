@@ -10,11 +10,11 @@ export const getTheme = (mode: "light" | "dark") =>
       secondary: {
         main: mode === "light" ? "#1976d2" : "#1976d2",
       },
-      orcado:{
-        main:"#0d6abf"
+      orcado: {
+        main: "#0081A8",
       },
-      realizado:{
-        main: "#094780"
+      realizado: {
+        main: "#5E9134",
       },
       background: {
         default: mode === "light" ? "#f5f5f5" : "#121212",

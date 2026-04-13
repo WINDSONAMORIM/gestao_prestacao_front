@@ -49,7 +49,7 @@ export const getResumoPorSubgrupoMock: () => ResumoPorGrupoResponse = () => {
     }
 }
 
-export const getTendenciaPorGrupo: () => TendenciaPorGrupoResponse = () => {
+export const getTendenciaPorGrupoMock: () => TendenciaPorGrupoResponse = () => {
     return {
     statusCode: 200,
     success: true,

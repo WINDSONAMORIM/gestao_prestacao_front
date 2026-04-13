@@ -22,7 +22,7 @@ export const RowGrupo = ({ row, onSelect, index, selectedId }: RowGrupoProps) =>
 
     useEffect(() => {
         if (open && subGrupos.length === 0) {
-            fetchResumoPorSubGrupo(theme).then((data) => {
+            fetchResumoPorSubGrupo(theme, row.id).then((data) => {
                 const filtrados = data.filter((sub) =>
                     sub.id.startsWith(row.id)
                 );

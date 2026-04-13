@@ -9,24 +9,30 @@ import {
   TableRow,
 } from "@mui/material";
 
-import { useState } from "react";
-
-import { UseFinanceiro } from "@/features/financeiro/use.financeiro";
+import {
+  UseFinanceiroResumoPorGrupo,
+  UseFinanceiroResumoPorSubGrupo,
+} from "@/features/financeiro/use.financeiro";
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
-import { RowGrupo } from "./rowGrupo";
+
 
 export default function CollapsibleTable({
-  onSelect, 
-  selectedId
-}:
-{
-  onSelect:(row: ResumoUI)=>void; 
-  selectedId?:string;
+  onSelectGrupo,
+  onSelectSubGrupo,
+  selectedGrupoId,
+}: {
+  onSelectGrupo: (row: ResumoUI) => void;
+  onSelectSubGrupo: (row: ResumoUI) => void;
+  selectedGrupoId?: string;
 }) {
-  const { data, loading }: { data: ResumoUI[]; loading: boolean } =
-    UseFinanceiro();
+  const { data: grupos, loading } = UseFinanceiroResumoPorGrupo();
+  const { data: subGrupos } = UseFinanceiroResumoPorSubGrupo(
+    selectedGrupoId ?? "",
+  );
 
   if (loading) return <span>Carregando...</span>;
+
+  const isSubGrupo = !!selectedGrupoId;
 
   return (
     <TableContainer>
@@ -41,24 +47,95 @@ export default function CollapsibleTable({
         }}
       >
         <TableHead>
-          <TableRow>
+          <TableRow sx={{ fontSize: "0.9rem" }}>
             <TableCell>Grupo</TableCell>
-            <TableCell align="right">Orçado</TableCell>
-            <TableCell align="right">Realizado</TableCell>
-            <TableCell align="right">Variação</TableCell>
+            <TableCell align="left">Orçado</TableCell>
+            <TableCell align="left">Realizado</TableCell>
+            <TableCell align="left">Variação</TableCell>
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {data?.map((row, index) => (
-            <RowGrupo
-              key={row.id}
-              row={row}
-              index={index}
-              onSelect={onSelect}
-              selectedId={selectedId}
-            />
-          ))}
+          {!isSubGrupo &&
+            grupos.map((row, index) => (
+              <TableRow
+                key={row.id}
+                onClick={() => onSelectGrupo(row)}
+                sx={(theme) => ({
+                  "& td": {
+                    fontSize: "0.6rem",
+                  },
+                  backgroundColor:
+                    index % 2 === 0
+                      ? theme.palette.action.hover
+                      : theme.palette.background.paper,
+                  transition: "0.2s",
+                  "&:hover": {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                })}
+              >
+                <TableCell>{row.descricao}</TableCell>
+
+                <TableCell align="right">
+                  {row.orcado.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </TableCell>
+
+                <TableCell align="right">
+                  {row.realizado.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </TableCell>
+
+                <TableCell align="right" sx={{ color: row.ui.color }}>
+                  {row.ui.icon} {Math.abs(row.variacao).toFixed(1)}%
+                </TableCell>
+              </TableRow>
+            ))}
+          {isSubGrupo &&
+            subGrupos.map((row, index) => (
+              <TableRow
+                key={row.id}
+                onClick={() => onSelectSubGrupo(row)}
+                sx={(theme) => ({
+                  "& td": {
+                    fontSize: "0.6rem",
+                  },
+                  backgroundColor:
+                    index % 2 === 0
+                      ? theme.palette.action.hover
+                      : theme.palette.background.paper,
+                  transition: "0.2s",
+                  "&:hover": {
+                    backgroundColor: theme.palette.action.selected,
+                  },
+                })}
+              >
+                <TableCell>{row.descricao}</TableCell>
+
+                <TableCell align="right">
+                  {row.orcado.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </TableCell>
+
+                <TableCell align="right">
+                  {row.realizado.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </TableCell>
+
+                <TableCell align="right" sx={{ color: row.ui.color }}>
+                  {row.ui.icon} {Math.abs(row.variacao).toFixed(1)}%
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </TableContainer>
