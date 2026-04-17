@@ -6,17 +6,32 @@ import {
 } from "@/features/financeiro/financeiro.types";
 import { useQuery } from "@tanstack/react-query";
 import {
-  fetchResumoPorGrupo,
+  fetchResumoAnualPorGrupo,
+  fetchResumoMensalPorGrupo,
   fetchResumoPorSubGrupo,
   fetchTendenciaPorGrupo,
 } from "./financeiro.providers";
 import { useTheme } from "@mui/material";
 
-export const UseFinanceiroResumoPorGrupo = () => {
+export const UseFinanceiroResumoAnualPorGrupo = (ano: number) => {
   const theme = useTheme();
   const { data, isLoading } = useQuery<ResumoUI[]>({
-    queryKey: ["resumoPorGrupo"],
-    queryFn: () => fetchResumoPorGrupo(theme),
+    queryKey: ["resumoPorGrupo", ano],
+    queryFn: () => fetchResumoAnualPorGrupo(theme, ano),
+    enabled: !!ano,
+  });
+  return {
+    data: data ?? [],
+    loading: isLoading,
+  };
+};
+
+export const UseFinanceiroResumoMensalPorGrupo = (ano: number, mes: number) => {
+  const theme = useTheme();
+  const { data, isLoading } = useQuery<ResumoUI[]>({
+    queryKey: ["resumoPorGrupo", ano, mes],
+    queryFn: () => fetchResumoMensalPorGrupo(theme, ano, mes),
+    enabled: !!ano && !!mes,
   });
   return {
     data: data ?? [],
@@ -29,7 +44,7 @@ export const UseFinanceiroResumoPorSubGrupo = (groupId: string) => {
   const { data, isLoading } = useQuery<ResumoUI[]>({
     queryKey: ["resumoPorSubGrupo", groupId],
     queryFn: () => fetchResumoPorSubGrupo(theme, groupId),
-    enabled: !!groupId,
+    enabled: !!groupId, 
   });
   return {
     data: data ?? [],

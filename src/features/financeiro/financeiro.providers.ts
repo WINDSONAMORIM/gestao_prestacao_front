@@ -1,4 +1,4 @@
-import { getResumoPorGrupo, getResumoPorSubGrupo, getTendenciaPorGrupo,  } from "@/features/financeiro/financeiro.service";
+import { getResumoAnualPorGrupo, getResumoMensalPorGrupo, getResumoPorSubGrupo, getTendenciaPorGrupo,  } from "@/features/financeiro/financeiro.service";
 import { getResumoPorGrupoMock, getResumoPorSubgrupoMock, getTendenciaPorGrupoMock } from "./financeiro.mock";
 import { ResumoPorGrupo, ResumoUI, TendenciaPorGrupo } from "./financeiro.types";
 import { Theme } from "@mui/material";
@@ -6,14 +6,28 @@ import { mapResumo } from "./financeiro.mapper";
 
 const USE_MOCK = false;
 
-export const fetchResumoPorGrupo = async (theme: Theme): Promise<ResumoUI[]> => {
+export const fetchResumoAnualPorGrupo = async (theme: Theme, ano: number): Promise<ResumoUI[]> => {
     let data: ResumoPorGrupo[]
 
     if (USE_MOCK){
         await new Promise((r) => setTimeout(r, 500));
         data = getResumoPorGrupoMock().data;
     }else{
-        const response = await getResumoPorGrupo()
+        const response = await getResumoAnualPorGrupo(ano)
+        data = response.data
+    }
+
+    return data.map((item)=> mapResumo(item, theme))
+}
+
+export const fetchResumoMensalPorGrupo = async (theme: Theme, ano: number, mes: number): Promise<ResumoUI[]> => {
+    let data: ResumoPorGrupo[]
+
+    if (USE_MOCK){
+        await new Promise((r) => setTimeout(r, 500));
+        data = getResumoPorGrupoMock().data;
+    }else{
+        const response = await getResumoMensalPorGrupo(ano, mes)
         data = response.data
     }
 

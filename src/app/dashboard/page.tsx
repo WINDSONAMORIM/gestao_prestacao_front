@@ -1,6 +1,6 @@
 "use client";
 
-import { Autocomplete, Grid, Paper, TextField, useTheme } from "@mui/material";
+import { Box, Chip, Grid, Paper, Typography, useTheme } from "@mui/material";
 import { OrcadoCard } from "./components/orcadoCard";
 import UseOrcadoTotal from "../../features/orcado/use.orcado";
 import UseRealizadoTotal from "../../features/realizado/use.realizado";
@@ -10,18 +10,24 @@ import { VariacaoPieChart } from "./components/vairacaoPieChart";
 import { NavBar } from "./components/navBar";
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
 import { useState } from "react";
+import { meses } from "@/features/financeiro/financeiro.mapper";
+import { BreadcrumbsModern } from "@/modulos/financeiro/breadcrumbs";
+import { FiltroPeriodo, Mes } from "@/modulos/financeiro/toggle";
 
 const Dashboard = () => {
   const orcadoTotal = UseOrcadoTotal();
   const realizadoTotal = UseRealizadoTotal();
   const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(null);
   const [subGrupoSelecionado, setSubGrupoSelecionado] = useState<ResumoUI | null>(null);
-  // const variacao = useFinanceiroVariacao();
+  const [modo, setModo] = useState<"consolidado" | "mensal">("consolidado");
+  const [mesSelecionado, setMesSelecionado] = useState<Mes | null>(null);
+  const [anoSelecionado, setAnoSelecionado] = useState<number>(2026);
+
   const theme = useTheme();
   return (
     <>
       <NavBar />
-      <Grid container spacing={4} padding={2}>
+      <Grid container spacing={4} padding={2} alignItems="stretch">
         <Grid size={{ xs: 12, md: 3 }}>
           <OrcadoCard
             title="Total Orçado"
@@ -45,67 +51,28 @@ const Dashboard = () => {
           />
         </Grid>
         <Grid size={{ xs: 12, md: 3 }}>
-          <OrcadoCard title="Total Realizado" callback={realizadoTotal} />
-        </Grid>
-      </Grid>
-      <Grid container spacing={4}>
-        <Grid size={{ xs: 12, md: 1 }}>
-          {(grupoSelecionado || subGrupoSelecionado) && (
-            <button
-              onClick={() => {
-                if (subGrupoSelecionado) {
-                  setSubGrupoSelecionado(null);
-                } else {
-                  setGrupoSelecionado(null);
-                }
-              }}
-            >
-              ← Voltar
-            </button>
-          )}
-        </Grid>
-        <Grid size={{ xs: 12, md: 9 }}>
-          <div style={{ marginBottom: 16 }}>
-            <span
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                setGrupoSelecionado(null);
-                setSubGrupoSelecionado(null);
-              }}
-            >
-              ANALISE GERAL CONSOLIDADA
-            </span>
-
-            {grupoSelecionado && (
-              <>
-                {" > "}
-                <span
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setSubGrupoSelecionado(null)}
-                >
-                  {`COMPARATIVO MENSAL - ${grupoSelecionado.descricao}`}
-                </span>
-              </>
-            )}
-
-            {subGrupoSelecionado && (
-              <>
-                {" > "}
-                <span>{subGrupoSelecionado.descricao}</span>
-              </>
-            )}
-          </div>
-        </Grid>
-        <Grid size={{ xs: 12, md: 2 }}>
-          <Autocomplete
-            disablePortal
-            options={["2025", "2026"]}
-            renderInput={(params) => <TextField {...params} label="ANO" />}
+          <FiltroPeriodo
+            modo={modo}
+            setModo={setModo}
+            anoSelecionado={anoSelecionado}
+            setAnoSelecionado={setAnoSelecionado}
+            mesSelecionado={mesSelecionado}
+            setMesSelecionado={setMesSelecionado}
+            meses={meses}
           />
         </Grid>
       </Grid>
+      <Grid container spacing={1} paddingLeft={4}>
+        <BreadcrumbsModern
+          grupoSelecionado={grupoSelecionado}
+          subGrupoSelecionado={subGrupoSelecionado}
+          setGrupoSelecionado={setGrupoSelecionado}
+          setSubGrupoSelecionado={setSubGrupoSelecionado}
+        />
+      </Grid>
       <Grid container spacing={4} padding={2}>
         <Grid size={{ xs: 12, md: 8 }}>
+
           <Paper
             sx={{
               width: "100%",
@@ -114,9 +81,27 @@ const Dashboard = () => {
               boxShadow: 3,
               borderRadius: 2,
               display: "flex",
+              flexDirection: "column",
             }}
           >
-            <GraficoFinanceiro selecionado={grupoSelecionado} />
+            <Box sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between"
+            }}>
+              <Typography variant="h6">Análise Anual</Typography>
+              {grupoSelecionado && (
+                <>
+                  <Typography variant="h6"
+                    onClick={() => setSubGrupoSelecionado(null)}
+                  >
+                    {`${grupoSelecionado.descricao}`}
+                  </Typography>
+                </>
+              )}
+              <Chip label={anoSelecionado} color="primary" sx={{ flexShrink: 0 }} />
+            </Box>
+            <GraficoFinanceiro selecionado={grupoSelecionado} ano={anoSelecionado} />
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
@@ -139,10 +124,15 @@ const Dashboard = () => {
               onSelectSubGrupo={(subGrupo) => {
                 setSubGrupoSelecionado(subGrupo);
               }}
-
+              anoSelecionado={anoSelecionado}
+              mesSelecionado={mesSelecionado?.value ?? meses[0].value}
+              modo={modo}
             />
           </Paper>
         </Grid>
+      </Grid>
+      <Grid container>
+        <Grid> </Grid>
       </Grid>
     </>
   );

@@ -10,7 +10,8 @@ import {
 } from "@mui/material";
 
 import {
-  UseFinanceiroResumoPorGrupo,
+  UseFinanceiroResumoAnualPorGrupo,
+  UseFinanceiroResumoMensalPorGrupo,
   UseFinanceiroResumoPorSubGrupo,
 } from "@/features/financeiro/use.financeiro";
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
@@ -20,15 +21,24 @@ export default function CollapsibleTable({
   onSelectGrupo,
   onSelectSubGrupo,
   selectedGrupoId,
+  anoSelecionado,
+  mesSelecionado,
+  modo
 }: {
   onSelectGrupo: (row: ResumoUI) => void;
   onSelectSubGrupo: (row: ResumoUI) => void;
   selectedGrupoId?: string;
+  anoSelecionado:number;
+  mesSelecionado:number;
+  modo:"consolidado" | "mensal";
 }) {
-  const { data: grupos, loading } = UseFinanceiroResumoPorGrupo();
-  const { data: subGrupos } = UseFinanceiroResumoPorSubGrupo(
-    selectedGrupoId ?? "",
-  );
+  const { data: gruposAnual, loading: loadingAnual } = UseFinanceiroResumoAnualPorGrupo(anoSelecionado);
+  const { data: gruposMensal, loading: loadingMensal } = UseFinanceiroResumoMensalPorGrupo(anoSelecionado, mesSelecionado);
+  const { data: subGrupos } = UseFinanceiroResumoPorSubGrupo(selectedGrupoId ?? "");
+
+  const isMensal = modo === "mensal" && !!mesSelecionado;
+  const grupos = isMensal ? gruposMensal : gruposAnual;
+  const loading = isMensal ? loadingMensal : loadingAnual;
 
   if (loading) return <span>Carregando...</span>;
 

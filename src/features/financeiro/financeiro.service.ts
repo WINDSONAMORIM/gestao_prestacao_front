@@ -2,10 +2,17 @@ import { ApiResponse } from "@/types/apiResponse";
 import { connection } from "../../service/connection";
 import { ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
 
-export const getResumoPorGrupo = async (): Promise<
+export const getResumoAnualPorGrupo = async (ano: number): Promise<
   ApiResponse<ResumoPorGrupo[]>
 > => {
-  const response = await connection.get("/financeiro/resumo-grupo");
+  const response = await connection.get(`/financeiro/resumo-anual-grupo/${ano}`);
+  return response.data;
+};
+
+export const getResumoMensalPorGrupo = async (ano: number, mes: number): Promise<
+  ApiResponse<ResumoPorGrupo[]>
+> => {
+  const response = await connection.get(`/financeiro/resumo-mensal-grupo/${ano}/${mes}`);
   return response.data;
 };
 
