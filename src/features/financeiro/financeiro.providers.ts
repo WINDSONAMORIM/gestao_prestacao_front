@@ -1,4 +1,4 @@
-import { getResumoAnualPorGrupo, getResumoMensalPorGrupo, getResumoPorSubGrupo, getTendenciaPorGrupo,  } from "@/features/financeiro/financeiro.service";
+import { getResumoAnualPorGrupo, getResumoAnualPorSubGrupo, getResumoMensalPorGrupo, getResumoPorSubGrupo, getTendenciaPorGrupo,  } from "@/features/financeiro/financeiro.service";
 import { getResumoPorGrupoMock, getResumoPorSubgrupoMock, getTendenciaPorGrupoMock } from "./financeiro.mock";
 import { ResumoPorGrupo, ResumoUI, TendenciaPorGrupo } from "./financeiro.types";
 import { Theme } from "@mui/material";
@@ -34,14 +34,14 @@ export const fetchResumoMensalPorGrupo = async (theme: Theme, ano: number, mes: 
     return data.map((item)=> mapResumo(item, theme))
 }
 
-export const fetchResumoPorSubGrupo = async (theme: Theme, groupId: string): Promise<ResumoUI[]> => {
+export const fetchResumoAnualPorSubGrupo = async (theme: Theme, ano: number, groupId: string): Promise<ResumoUI[]> => {
     let data: ResumoPorGrupo[]
     
     if (USE_MOCK){
         await new Promise((r) => setTimeout(r, 500));
         data = getResumoPorSubgrupoMock().data;
     }else{
-        const response = await getResumoPorSubGrupo(groupId)
+        const response = await getResumoAnualPorSubGrupo(ano, groupId)
         data = response.data
     }
     

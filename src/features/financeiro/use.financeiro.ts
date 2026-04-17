@@ -7,8 +7,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchResumoAnualPorGrupo,
+  fetchResumoAnualPorSubGrupo,
   fetchResumoMensalPorGrupo,
-  fetchResumoPorSubGrupo,
   fetchTendenciaPorGrupo,
 } from "./financeiro.providers";
 import { useTheme } from "@mui/material";
@@ -39,12 +39,12 @@ export const UseFinanceiroResumoMensalPorGrupo = (ano: number, mes: number) => {
   };
 };
 
-export const UseFinanceiroResumoPorSubGrupo = (groupId: string) => {
+export const UseFinanceiroResumoAnualPorSubGrupo = (ano: number, groupId: string) => {
   const theme = useTheme();
   const { data, isLoading } = useQuery<ResumoUI[]>({
-    queryKey: ["resumoPorSubGrupo", groupId],
-    queryFn: () => fetchResumoPorSubGrupo(theme, groupId),
-    enabled: !!groupId, 
+    queryKey: ["resumoPorSubGrupo", ano, groupId],
+    queryFn: () => fetchResumoAnualPorSubGrupo(theme, ano, groupId),
+    enabled: !!ano && !!groupId, 
   });
   return {
     data: data ?? [],

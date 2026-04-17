@@ -16,6 +16,13 @@ export const getResumoMensalPorGrupo = async (ano: number, mes: number): Promise
   return response.data;
 };
 
+export const getResumoAnualPorSubGrupo = async (ano: number, grupoId: string): Promise<
+  ApiResponse<ResumoPorGrupo[]>
+> => {
+const response = await connection.get(`/financeiro/resumo-anual-subgrupo/${ano}/${grupoId}`);
+  return response.data;
+};
+
 export const getResumoPorSubGrupo = async (grupoId: string): Promise<
   ApiResponse<ResumoPorGrupo[]>
 > => {

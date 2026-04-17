@@ -11,8 +11,8 @@ import {
 
 import {
   UseFinanceiroResumoAnualPorGrupo,
+  UseFinanceiroResumoAnualPorSubGrupo,
   UseFinanceiroResumoMensalPorGrupo,
-  UseFinanceiroResumoPorSubGrupo,
 } from "@/features/financeiro/use.financeiro";
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
 
@@ -34,7 +34,7 @@ export default function CollapsibleTable({
 }) {
   const { data: gruposAnual, loading: loadingAnual } = UseFinanceiroResumoAnualPorGrupo(anoSelecionado);
   const { data: gruposMensal, loading: loadingMensal } = UseFinanceiroResumoMensalPorGrupo(anoSelecionado, mesSelecionado);
-  const { data: subGrupos } = UseFinanceiroResumoPorSubGrupo(selectedGrupoId ?? "");
+  const { data: subGrupos } = UseFinanceiroResumoAnualPorSubGrupo(anoSelecionado, selectedGrupoId ?? "");
 
   const isMensal = modo === "mensal" && !!mesSelecionado;
   const grupos = isMensal ? gruposMensal : gruposAnual;
