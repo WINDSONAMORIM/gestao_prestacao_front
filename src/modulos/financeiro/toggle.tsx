@@ -57,7 +57,7 @@ export const FiltroPeriodo = ({
     return (
         <Card
             sx={{
-                height: "100%", // 🔥 faz igualar altura no Grid
+                height: "100%",
                 borderRadius: "16px",
                 boxShadow: 3,
                 display: "flex",
@@ -66,14 +66,14 @@ export const FiltroPeriodo = ({
             }}
         >
             <CardContent>
-                <Stack spacing={2}>
+                {/* <Stack spacing={2}> */}
                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                         <Typography fontWeight={600}>
                             {modo === "consolidado" ? "Visão Consolidada" : "Visão Mensal"}
                         </Typography>
 
                         <Switch checked={modo === "consolidado"} onChange={handleToggleModo} />
-                    </Stack>
+                    {/* </Stack> */}
 
                     {modo === "mensal" ? (
                         <Stack direction="row" spacing={1} alignItems="center">

@@ -12,8 +12,10 @@ import { ResumoUI } from "@/features/financeiro/financeiro.types";
 import { useState } from "react";
 import { meses } from "@/features/financeiro/financeiro.mapper";
 import { BreadcrumbsModern } from "@/modulos/financeiro/breadcrumbs";
-import { FiltroPeriodo, Mes } from "@/modulos/financeiro/toggle";
+// import { FiltroPeriodo, Mes } from "@/modulos/financeiro/toggle";
 import { TableExcedente } from "@/modulos/financeiro/table/tableExcedente";
+import { FiltroPeriodo } from "@/modulos/financeiro/handleTabChange";
+// import { FiltroPeriodo } from "@/modulos/financeiro/handleModoChange";
 
 const Dashboard = () => {
   const orcadoTotal = UseOrcadoTotal();
@@ -52,6 +54,7 @@ const Dashboard = () => {
           />
         </Grid>
         <Grid size={{ xs: 12, md: 3 }}>
+          {/* <FiltroPeriodo /> */}
           <FiltroPeriodo
             modo={modo}
             setModo={setModo}
@@ -126,7 +129,7 @@ const Dashboard = () => {
             }}
           >
             <CollapsibleTable
-              selectedGrupoId={grupoSelecionado?.id}
+              selectedGrupoId={grupoSelecionado?.id_grupo}
               onSelectGrupo={(grupo) => {
                 setGrupoSelecionado(grupo);
                 setSubGrupoSelecionado(null);

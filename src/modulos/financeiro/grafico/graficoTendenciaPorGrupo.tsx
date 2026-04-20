@@ -24,6 +24,7 @@ interface DataGrafico {
 
 export function GraficoTendenciaPorGrupo({dataGrafico }: { dataGrafico: DataGrafico[] }) {
   const theme = useTheme();
+  
 
   return (
     <ResponsiveContainer width="100%" height={300} >

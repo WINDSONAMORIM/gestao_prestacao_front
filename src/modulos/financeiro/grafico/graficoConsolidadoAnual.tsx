@@ -11,7 +11,7 @@ export function GraficoFinanceiroConsolidado({ selecionado,ano }: { selecionado:
   const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
 
   const dataFiltrada = selecionado
-    ? data.filter((item) => item.id === selecionado.id)
+    ? data.filter((item) => item.id_grupo === selecionado.id_grupo)
     : data;
 
   const dataComPercentual = dataFiltrada.map((item) => ({
@@ -26,7 +26,7 @@ export function GraficoFinanceiroConsolidado({ selecionado,ano }: { selecionado:
       <ComposedChart data={dataComPercentual}>
 
         <XAxis
-          dataKey="id"
+          dataKey={(data)=> data.id_grupo}
           stroke={theme.palette.text.primary}
           angle={-45}
           textAnchor="end"
@@ -36,7 +36,7 @@ export function GraficoFinanceiroConsolidado({ selecionado,ano }: { selecionado:
         <Tooltip content={<TooltipConsolidadoAnual />} />
         <Bar dataKey="orcado" fill={theme.palette.orcado.main} name="orçado" />
         <Bar
-          dataKey="realizado"
+          dataKey={(data)=> data.realizado}
           fill={theme.palette.realizado.main}
           name="realizado"
         />

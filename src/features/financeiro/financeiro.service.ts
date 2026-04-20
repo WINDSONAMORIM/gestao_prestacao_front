@@ -33,7 +33,6 @@ const response = await connection.get(`/financeiro/resumo-subgrupo/${grupoId}`);
 export const getTendenciaPorGrupo = async (grupoId: string): Promise<
   ApiResponse<TendenciaPorGrupo[]>> => {
   const response = await connection.get(`/financeiro/tendencia-mensal/${grupoId}`);
-  console.log("Tendencia por grupo:", response.data);
   return response.data
 }
 
@@ -41,7 +40,6 @@ export const getVariacaoOrcadoRealizado = async (): Promise<
   ApiResponse<{ variacao: number }>
 > => {
   const response = await connection.get("/financeiro/variacao");
-  console.log("Variacao Orcado x Realizado:", response.data.data);
   return response.data;
 };
 
@@ -49,7 +47,6 @@ export const getExecucaoOrcadoRealizado = async (): Promise<
   ApiResponse<{ execucao: number }>
 > => {
   const response = await connection.get("/financeiro/execucao");
-  console.log("Execucao Orçado x Realizado:", response.data);
   return response.data;
 };
 
@@ -59,7 +56,6 @@ ApiResponse<ExcedenteAno[]>
   const response = await connection.get(
     `/financeiro/top-anual-excede-orcado/${ano}`,
   );
-  console.log(`Excedente anual: ${response.data}`)
   return response.data;
 };
 

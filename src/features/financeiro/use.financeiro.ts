@@ -54,17 +54,17 @@ export const UseFinanceiroResumoAnualPorSubGrupo = (ano: number, groupId: string
   };
 };
 
-export const UseFinanceiroTendenciaPorGrupo = (grupoId: string) => {
+export const UseFinanceiroTendenciaPorGrupo = (grupoId?: string) => {
   const theme = useTheme();
   const { data, isLoading } = useQuery<TendenciaPorGrupo[]>({
     queryKey: ["tendenciaPorGrupo", grupoId],
     queryFn: () => fetchTendenciaPorGrupo(grupoId!),
     enabled: !!grupoId,
-    placeholderData: (previousData) => previousData ?? [],
+    // placeholderData: (previousData) => previousData ?? [],
   });
   return {
     data: data ?? [],
-    loading: isLoading,
+    // loading: isLoading,
   };
 };
 

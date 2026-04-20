@@ -11,9 +11,13 @@ import { GraficoTendenciaPorGrupo } from "./grafico/graficoTendenciaPorGrupo";
 export function GraficoFinanceiro({ selecionado,ano }: { selecionado: ResumoPorGrupo | null, ano: number }) {
   const theme = useTheme();
   const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
-  const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo(selecionado?.id ?? "").data;
+  // const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo(selecionado?.id_grupo ?? "").data;
+  const grupoId = selecionado?.id_grupo;
+
+  const {data: tendencia = []} = UseFinanceiroTendenciaPorGrupo(grupoId);
 
   const dataGrafico = meses.map((mes, index) => {
+
     const registro = tendencia.find(t => Number(t.mes) === index + 1);
     return {
       mes: mes.label,
@@ -24,7 +28,7 @@ export function GraficoFinanceiro({ selecionado,ano }: { selecionado: ResumoPorG
   });
 
   const dataFiltrada = selecionado
-    ? data.filter((item) => item.id === selecionado.id)
+    ? data.filter((item) => item.id_grupo === selecionado.id_grupo)
     : data;
 
   const dataComPercentual = dataFiltrada.map((item) => ({

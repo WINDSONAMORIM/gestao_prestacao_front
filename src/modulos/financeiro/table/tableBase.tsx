@@ -69,7 +69,7 @@ export default function CollapsibleTable({
           {!isSubGrupo &&
             grupos.map((row, index) => (
               <TableRow
-                key={row.id}
+                key={row.id_grupo}
                 onClick={() => onSelectGrupo(row)}
                 sx={(theme) => ({
                   "& td": {
@@ -109,7 +109,7 @@ export default function CollapsibleTable({
           {isSubGrupo &&
             subGrupos.map((row, index) => (
               <TableRow
-                key={row.id}
+                key={row.id_grupo}
                 onClick={() => onSelectSubGrupo(row)}
                 sx={(theme) => ({
                   "& td": {

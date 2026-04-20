@@ -1,7 +1,7 @@
 import { ApiResponse } from "@/types/apiResponse";
 
 export interface ResumoPorGrupo {
-  id: string;
+  id_grupo: string;
   descricao: string;
   orcado: number;
   realizado: number;
