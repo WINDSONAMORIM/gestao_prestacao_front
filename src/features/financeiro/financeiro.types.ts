@@ -24,5 +24,14 @@ export interface ResumoUI extends ResumoPorGrupo{
   ui: FinanceiroUI;
 }
 
+export interface ExcedenteAno{
+  id_grupo: string;
+  orcado: number;
+  realizado: number;
+  diferenca: number;
+  perc: number;
+}
+
 export type ResumoPorGrupoResponse = ApiResponse<ResumoPorGrupo[]>
 export type TendenciaPorGrupoResponse = ApiResponse<TendenciaPorGrupo[]>
+export type ExcedenteAnoResponse = ApiResponse<ExcedenteAno[]>

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { meses } from "@/features/financeiro/financeiro.mapper";
 import { BreadcrumbsModern } from "@/modulos/financeiro/breadcrumbs";
 import { FiltroPeriodo, Mes } from "@/modulos/financeiro/toggle";
+import { TableExcedente } from "@/modulos/financeiro/table/tableExcedente";
 
 const Dashboard = () => {
   const orcadoTotal = UseOrcadoTotal();
@@ -72,7 +73,6 @@ const Dashboard = () => {
       </Grid>
       <Grid container spacing={4} padding={2}>
         <Grid size={{ xs: 12, md: 8 }}>
-
           <Paper
             sx={{
               width: "100%",
@@ -84,24 +84,34 @@ const Dashboard = () => {
               flexDirection: "column",
             }}
           >
-            <Box sx={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "space-between"
-            }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
               <Typography variant="h6">Análise Anual</Typography>
               {grupoSelecionado && (
                 <>
-                  <Typography variant="h6"
+                  <Typography
+                    variant="h6"
                     onClick={() => setSubGrupoSelecionado(null)}
                   >
                     {`${grupoSelecionado.descricao}`}
                   </Typography>
                 </>
               )}
-              <Chip label={anoSelecionado} color="primary" sx={{ flexShrink: 0 }} />
+              <Chip
+                label={anoSelecionado}
+                color="primary"
+                sx={{ flexShrink: 0 }}
+              />
             </Box>
-            <GraficoFinanceiro selecionado={grupoSelecionado} ano={anoSelecionado} />
+            <GraficoFinanceiro
+              selecionado={grupoSelecionado}
+              ano={anoSelecionado}
+            />
           </Paper>
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
@@ -131,8 +141,11 @@ const Dashboard = () => {
           </Paper>
         </Grid>
       </Grid>
-      <Grid container>
-        <Grid> </Grid>
+      <Grid container my={2} mx={5}>
+        <Typography>TOP 5 GRUPOS EXCENDENTES</Typography>
+        <Grid size={12}>
+          <TableExcedente ano={anoSelecionado}/>
+        </Grid>
       </Grid>
     </>
   );

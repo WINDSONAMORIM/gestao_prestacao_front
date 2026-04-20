@@ -1,11 +1,13 @@
 "use client";
 
 import {
+  ExcedenteAno,
   ResumoUI,
   TendenciaPorGrupo,
 } from "@/features/financeiro/financeiro.types";
 import { useQuery } from "@tanstack/react-query";
 import {
+  fetchExcedenteAno,
   fetchResumoAnualPorGrupo,
   fetchResumoAnualPorSubGrupo,
   fetchResumoMensalPorGrupo,
@@ -65,6 +67,18 @@ export const UseFinanceiroTendenciaPorGrupo = (grupoId: string) => {
     loading: isLoading,
   };
 };
+
+export const UseFinanceiroExcendenteAno = (ano: number )=> {
+  const {data, isLoading} = useQuery<ExcedenteAno[]>({
+    queryKey:["excedenteAno", ano],
+    queryFn: () => fetchExcedenteAno(ano),
+    enabled: !!ano
+  });
+  return{
+    data: data ?? [],
+    loading: isLoading,
+  };
+}
 
 // export function useFinanceiroVariacao() {
 //   const [data, setData] = useState<number | null>(null);

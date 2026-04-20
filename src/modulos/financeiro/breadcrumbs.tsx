@@ -16,7 +16,7 @@ interface Props {
   setSubGrupoSelecionado: React.Dispatch<React.SetStateAction<ResumoUI | null>>;
 }
 
-const MotionLink = motion(Link);
+const MotionLink = motion.create(Link);
 
 export const BreadcrumbsModern = ({
   grupoSelecionado,

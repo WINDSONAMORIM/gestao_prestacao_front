@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types/apiResponse";
 import { connection } from "../../service/connection";
-import { ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
+import { ExcedenteAno, ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
 
 export const getResumoAnualPorGrupo = async (ano: number): Promise<
   ApiResponse<ResumoPorGrupo[]>
@@ -50,6 +50,16 @@ export const getExecucaoOrcadoRealizado = async (): Promise<
 > => {
   const response = await connection.get("/financeiro/execucao");
   console.log("Execucao Orçado x Realizado:", response.data);
+  return response.data;
+};
+
+export const getTopExcedenteAnual = async (ano: number): Promise<
+ApiResponse<ExcedenteAno[]>
+> => {
+  const response = await connection.get(
+    `/financeiro/top-anual-excede-orcado/${ano}`,
+  );
+  console.log(`Excedente anual: ${response.data}`)
   return response.data;
 };
 
