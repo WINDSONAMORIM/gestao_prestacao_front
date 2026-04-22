@@ -3,12 +3,16 @@
 import { useTheme } from "@mui/material";
 import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
 import { Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis } from "recharts";
-import { UseFinanceiroResumoAnualPorGrupo } from "@/features/financeiro/use.financeiro";
+import { UseFinanceiroResumoAnualPorGrupo, UseFinanceiroResumoMensalPorGrupo } from "@/features/financeiro/use.financeiro";
 import { TooltipConsolidadoAnual } from "../tooltip/tooltipConsolidadoAnual";
 
-export function GraficoFinanceiroConsolidado({ selecionado,ano }: { selecionado: ResumoPorGrupo | null, ano: number }) {
+export function GraficoFinanceiroConsolidado({ selecionado,ano, mes, modo }: { selecionado: ResumoPorGrupo | null, ano: number, mes: number, modo: string }) {
   const theme = useTheme();
-  const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
+
+  const isModo = modo;
+  const {data}:{data:ResumoPorGrupo[]} = isModo === "consolidado" ? UseFinanceiroResumoAnualPorGrupo(ano) : UseFinanceiroResumoMensalPorGrupo(ano, mes);
+  // const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
+  // const {data}:{dataMensal:ResumoPorGrupo[]} = UseFinanceiroResumoMensalPorGrupo(ano, mes)
 
   const dataFiltrada = selecionado
     ? data.filter((item) => item.id_grupo === selecionado.id_grupo)

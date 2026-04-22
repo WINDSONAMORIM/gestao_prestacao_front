@@ -5,6 +5,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
+import GroupsIcon from '@mui/icons-material/Groups';
 import { motion } from "framer-motion";
 
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
@@ -33,7 +34,12 @@ export const BreadcrumbsModern = ({
         <MotionLink
           underline="hover"
           color="inherit"
-          sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 0.5,
+            cursor: "pointer",
+          }}
           onClick={() => {
             setGrupoSelecionado(null);
             setSubGrupoSelecionado(null);
@@ -49,13 +55,19 @@ export const BreadcrumbsModern = ({
           <MotionLink
             underline="hover"
             color="inherit"
-            sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              cursor: "pointer",
+            }}
             onClick={() => setSubGrupoSelecionado(null)}
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.05 }}
           >
-            <BarChartIcon fontSize="small" />
+            {grupoSelecionado.descricao === "PESSOAL E REFLEXO" ? <GroupsIcon /> :
+            <BarChartIcon fontSize="small" />}
             {grupoSelecionado.descricao}
           </MotionLink>
         )}

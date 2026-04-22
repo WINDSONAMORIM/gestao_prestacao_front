@@ -12,9 +12,11 @@ export const getTheme = (mode: "light" | "dark") =>
       },
       orcado: {
         main: "#0081A8",
+        light: "#B8DAF7",
       },
       realizado: {
         main: "#5E9134",
+        light: "#c7DAB6",
       },
       background: {
         default: mode === "light" ? "#f5f5f5" : "#121212",

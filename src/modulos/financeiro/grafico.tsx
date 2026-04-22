@@ -3,12 +3,12 @@
 import { useTheme } from "@mui/material";
 
 import { UseFinanceiroResumoAnualPorGrupo, UseFinanceiroTendenciaPorGrupo } from "../../features/financeiro/use.financeiro";
-import { ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
+import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
 import { meses } from "@/features/financeiro/financeiro.mapper";
 import { GraficoFinanceiroConsolidado } from "./grafico/graficoConsolidadoAnual";
 import { GraficoTendenciaPorGrupo } from "./grafico/graficoTendenciaPorGrupo";
 
-export function GraficoFinanceiro({ selecionado,ano }: { selecionado: ResumoPorGrupo | null, ano: number }) {
+export function GraficoFinanceiro({ selecionado,ano, mes, modo }: { selecionado: ResumoPorGrupo | null, ano: number, mes:number, modo:string }) {
   const theme = useTheme();
   const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
   // const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo(selecionado?.id_grupo ?? "").data;
@@ -45,6 +45,6 @@ export function GraficoFinanceiro({ selecionado,ano }: { selecionado: ResumoPorG
     );
   }
   return (
-    <GraficoFinanceiroConsolidado selecionado={selecionado} ano={ano} />
+    <GraficoFinanceiroConsolidado selecionado={selecionado} ano={ano} mes={mes} modo={modo}/>
   );
 }
