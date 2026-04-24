@@ -14,17 +14,13 @@ import { meses } from "@/features/financeiro/financeiro.mapper";
 import { BreadcrumbsModern } from "@/modulos/financeiro/breadcrumbs";
 import { TableExcedente } from "@/modulos/financeiro/table/tableExcedente";
 import { FiltroPeriodo, Mes } from "@/modulos/financeiro/handleTabChange";
-// import { Mes } from "@/modulos/financeiro/toggle";
 
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import WifiTetheringIcon from "@mui/icons-material/WifiTethering";
 import SpeedIcon from "@mui/icons-material/Speed";
 
-import EditAttributesIcon from "@mui/icons-material/EditAttributes";
-
 const Dashboard = () => {
-  // const orcadoTotal = UseOrcadoTotal();
-  // const realizadoTotal = UseRealizadoTotal();
+
   const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(
     null,
   );

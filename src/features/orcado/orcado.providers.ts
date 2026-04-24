@@ -4,13 +4,13 @@ import { OrcadoTotal } from "./orcado.types";
 
 const USE_MOCK = false;
 
-export const fetchOrcadoTotal = async (): Promise<OrcadoTotal> => {
+export const fetchOrcadoTotal = async (ano: number): Promise<OrcadoTotal> => {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 500));
 
     return getTotalOrcadoMock().data;
   }
-  const response = await getTotalOrcado();
+  const response = await getTotalOrcado(ano);
   
   return response.data;
 };

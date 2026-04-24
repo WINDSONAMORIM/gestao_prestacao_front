@@ -11,14 +11,13 @@ import { GraficoTendenciaPorGrupo } from "./grafico/graficoTendenciaPorGrupo";
 export function GraficoFinanceiro({ selecionado,ano, mes, modo }: { selecionado: ResumoPorGrupo | null, ano: number, mes:number, modo:string }) {
   const theme = useTheme();
   const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
-  // const tendencia: TendenciaPorGrupo[] = UseFinanceiroTendenciaPorGrupo(selecionado?.id_grupo ?? "").data;
   const grupoId = selecionado?.id_grupo;
 
   const {data: tendencia = []} = UseFinanceiroTendenciaPorGrupo(grupoId);
 
   const dataGrafico = meses.map((mes, index) => {
 
-    const registro = tendencia.find(t => Number(t.mes) === index + 1);
+  const registro = tendencia.find(t => Number(t.mes) === index + 1);
     return {
       mes: mes.label,
       ordem: mes.value,

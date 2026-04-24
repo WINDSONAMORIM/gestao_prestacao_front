@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types/apiResponse";
 import { connection } from "../../service/connection";
-import { ExcedenteAno, ResumoPorGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
+import { ExcedenteAno, ResumoPorGrupo, ResumoPorSubGrupo, TendenciaPorGrupo } from "@/features/financeiro/financeiro.types";
 
 export const getResumoAnualPorGrupo = async (ano: number): Promise<
   ApiResponse<ResumoPorGrupo[]>
@@ -17,18 +17,25 @@ export const getResumoMensalPorGrupo = async (ano: number, mes: number): Promise
 };
 
 export const getResumoAnualPorSubGrupo = async (ano: number, grupoId: string): Promise<
-  ApiResponse<ResumoPorGrupo[]>
+  ApiResponse<ResumoPorSubGrupo[]>
 > => {
 const response = await connection.get(`/financeiro/resumo-anual-subgrupo/${ano}/${grupoId}`);
   return response.data;
 };
 
-export const getResumoPorSubGrupo = async (grupoId: string): Promise<
-  ApiResponse<ResumoPorGrupo[]>
+export const getResumoMensalPorSubgrupo = async(ano:number, mes:number, id_grupo: string): Promise<
+  ApiResponse<ResumoPorSubGrupo[]>
 > => {
-const response = await connection.get(`/financeiro/resumo-subgrupo/${grupoId}`);
+  const response = await connection.get(`/financeiro/resumo-mensal-subgrupo/${ano}/${mes}/${id_grupo}`);
   return response.data;
-};
+}  
+
+// export const getResumoPorSubGrupo = async (grupoId: string): Promise<
+//   ApiResponse<ResumoPorGrupo[]>
+// > => {
+// const response = await connection.get(`/financeiro/resumo-subgrupo/${grupoId}`);
+//   return response.data;
+// };
 
 export const getTendenciaPorGrupo = async (grupoId: string): Promise<
   ApiResponse<TendenciaPorGrupo[]>> => {

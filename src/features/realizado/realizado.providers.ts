@@ -5,14 +5,14 @@ import { RealizadoTotal } from "./realizado.types";
 
 const USE_MOCK = false;
 
-export const fetchRealizadoTotal = async (): Promise<RealizadoTotal> => {
+export const fetchRealizadoTotal = async (ano: number): Promise<RealizadoTotal> => {
   if (USE_MOCK) {
     await new Promise((r) => setTimeout(r, 500));
 
     return getRealizadoTotalMock().data;
   }
 
-  const response = await getTotalRealizado();
+  const response = await getTotalRealizado(ano);
   return response.data;
 };
 

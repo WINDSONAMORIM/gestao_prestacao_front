@@ -1,19 +1,8 @@
 "use client";
 
 import { useTheme } from "@mui/material";
-import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
-import { Area, AreaChart, Bar, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { UseFinanceiroResumoAnualPorGrupo } from "@/features/financeiro/use.financeiro";
+import { Area, AreaChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { TooltipTendenciaPorGrupo } from "../tooltip/tooltipTendenciaPorGrupo";
-
-// interface DataGrafico {
-//   mes: {
-//     label: string;
-//     value: number;
-//   };
-//   realizado: number;
-//   orcado: number;
-// }
 
 interface DataGrafico {
   mes: string;
@@ -22,9 +11,31 @@ interface DataGrafico {
   orcado: number;
 }
 
-export function GraficoTendenciaPorGrupo({dataGrafico }: { dataGrafico: DataGrafico[] }) {
+export function GraficoTendenciaPorGrupo({ dataGrafico }: { dataGrafico: DataGrafico[] }) {
   const theme = useTheme();
+
+  const valores = dataGrafico
+    .flatMap(d => [d.realizado, d.orcado])
+    .filter(v => v > 0); // evita zero zoando escala
+
+  console.log(`Valores: ${valores}`)  
+
+  const min = Math.min(...valores);
+  const max = Math.max(...valores);
   
+  const variacao = (max - min) / max;
+  
+  const range = max - min;
+  
+  console.log(`min: ${min}`) 
+  console.log(`max: ${max}`) 
+  console.log(`varicao: ${variacao}`) 
+  console.log(`range: ${range}`) 
+
+  const padding =
+  range > 1_000_000
+    ? range * 0.01   // milhões → super sensível
+    : range * 0.01;  // valores menores → mais folga
 
   return (
     <ResponsiveContainer width="100%" height={300} >
@@ -38,12 +49,22 @@ export function GraficoTendenciaPorGrupo({dataGrafico }: { dataGrafico: DataGraf
 
         <XAxis dataKey="mes" />
         <YAxis
+          domain={[min - padding, max + padding]}
+          tickCount={6}
+          allowDecimals={true}
           tickFormatter={(value) =>
             value >= 1_000_000
               ? `${(value / 1_000_000).toFixed(1)}M`
               : `${(value / 1_000).toFixed(0)}K`
           }
         />
+        {/* <YAxis
+          tickFormatter={(value) =>
+            value >= 1_000_000
+              ? `${(value / 1_000_000).toFixed(1)}M`
+              : `${(value / 1_000).toFixed(0)}K`
+          }
+        /> */}
 
         <Tooltip content={<TooltipTendenciaPorGrupo />} />
 

@@ -11,6 +11,7 @@ import {
   fetchResumoAnualPorGrupo,
   fetchResumoAnualPorSubGrupo,
   fetchResumoMensalPorGrupo,
+  fetchResumoMensalPorSubgrupo,
   fetchTendenciaPorGrupo,
 } from "./financeiro.providers";
 import { useTheme } from "@mui/material";
@@ -47,6 +48,19 @@ export const UseFinanceiroResumoAnualPorSubGrupo = (ano: number, groupId: string
     queryKey: ["resumoPorSubGrupo", ano, groupId],
     queryFn: () => fetchResumoAnualPorSubGrupo(theme, ano, groupId),
     enabled: !!ano && !!groupId, 
+  });
+  return {
+    data: data ?? [],
+    loading: isLoading,
+  };
+};
+
+export const UseFinanceiroResumoMensalPorSubGrupo = (ano: number, mes: number, groupId: string) => {
+  const theme = useTheme();
+  const { data, isLoading } = useQuery<ResumoUI[]>({
+    queryKey: ["resumoPorSubGrupo", ano, mes, groupId],
+    queryFn: () => fetchResumoMensalPorSubgrupo(theme, ano, mes, groupId),
+    enabled: !!ano && !!mes && !!groupId, 
   });
   return {
     data: data ?? [],

@@ -7,6 +7,10 @@ export interface ResumoPorGrupo {
   realizado: number;
 }
 
+export interface ResumoPorSubGrupo extends ResumoPorGrupo {
+  id_subgrupo: string;
+}
+
 export interface TendenciaPorGrupo{
   grupo:string;
   mes: number;
@@ -20,6 +24,7 @@ export interface FinanceiroUI{
 }
 
 export interface ResumoUI extends ResumoPorGrupo{
+  id_subgrupo?: string;
   variacao: number;
   ui: FinanceiroUI;
 }

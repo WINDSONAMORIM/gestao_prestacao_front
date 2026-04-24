@@ -6,10 +6,11 @@ import {
 } from "./realizado.providers";
 import { RealizadoTotal } from "./realizado.types";
 
-export const UseRealizadoTotal = () => {
+export const UseRealizadoTotal = (ano: number) => {
   const { data, isLoading } = useQuery<RealizadoTotal>({
-    queryKey: ["realizadoTotal"],
-    queryFn: fetchRealizadoTotal,
+    queryKey: ["realizadoTotal", ano],
+    queryFn: () => fetchRealizadoTotal(ano),
+    enabled: !!ano
   });
 
   return {
@@ -35,7 +36,7 @@ export const useRealizadoModo = (modo: string, ano: number, mes: number) => {
   const isMensal = modo === "mensal";
 
   const realizadoMensal = UseRealizadoMensal(ano, mes);
-  const realizadoTotal = UseRealizadoTotal();
+  const realizadoTotal = UseRealizadoTotal(ano);
 
   return {
     value: isMensal ? realizadoMensal.value : realizadoTotal.value,

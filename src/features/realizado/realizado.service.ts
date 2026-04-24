@@ -1,8 +1,8 @@
 import { connection } from "../../service/connection";
 import { RealizadoTotalResponse } from "./realizado.types";
 
-export const getTotalRealizado = async (): Promise<RealizadoTotalResponse> => {
-  const response = await connection.get<RealizadoTotalResponse>("/realizado");
+export const getTotalRealizado = async (ano: number): Promise<RealizadoTotalResponse> => {
+  const response = await connection.get<RealizadoTotalResponse>(`/realizado-anual/${ano}`);
   return response.data;
 };
 

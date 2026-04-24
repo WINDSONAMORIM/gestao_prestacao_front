@@ -13,6 +13,7 @@ import {
   UseFinanceiroResumoAnualPorGrupo,
   UseFinanceiroResumoAnualPorSubGrupo,
   UseFinanceiroResumoMensalPorGrupo,
+  UseFinanceiroResumoMensalPorSubGrupo,
 } from "@/features/financeiro/use.financeiro";
 import { ResumoUI } from "@/features/financeiro/financeiro.types";
 
@@ -28,21 +29,26 @@ export default function CollapsibleTable({
   onSelectGrupo: (row: ResumoUI) => void;
   onSelectSubGrupo: (row: ResumoUI) => void;
   selectedGrupoId?: string;
-  anoSelecionado:number;
-  mesSelecionado:number;
-  modo:"consolidado" | "mensal";
+  anoSelecionado: number;
+  mesSelecionado: number;
+  modo: "consolidado" | "mensal";
 }) {
-  const { data: gruposAnual, loading: loadingAnual } = UseFinanceiroResumoAnualPorGrupo(anoSelecionado);
-  const { data: gruposMensal, loading: loadingMensal } = UseFinanceiroResumoMensalPorGrupo(anoSelecionado, mesSelecionado);
-  const { data: subGrupos } = UseFinanceiroResumoAnualPorSubGrupo(anoSelecionado, selectedGrupoId ?? "");
+  const { data: gruposAnual, loading: loadingGrupoAnual } = UseFinanceiroResumoAnualPorGrupo(anoSelecionado);
+  const { data: gruposMensal, loading: loadingGrupoMensal } = UseFinanceiroResumoMensalPorGrupo(anoSelecionado, mesSelecionado);
+  const { data: subGruposAnual, loading: loadingSubGrupoAnual } = UseFinanceiroResumoAnualPorSubGrupo(anoSelecionado, selectedGrupoId ?? "");
+  const { data: subGruposMensal, loading: loadingSubGrupoMensal } = UseFinanceiroResumoMensalPorSubGrupo(anoSelecionado, mesSelecionado, selectedGrupoId ?? "");
 
   const isMensal = modo === "mensal" && !!mesSelecionado;
   const grupos = isMensal ? gruposMensal : gruposAnual;
-  const loading = isMensal ? loadingMensal : loadingAnual;
+  const subGrupos = isMensal ? subGruposMensal : subGruposAnual;
+  const loading = isMensal ? loadingGrupoMensal : loadingGrupoAnual;
 
   if (loading) return <span>Carregando...</span>;
 
   const isSubGrupo = !!selectedGrupoId;
+
+  console.log("selectedGrupoId:", selectedGrupoId);
+  console.log("subGrupos:", subGrupos);
 
   return (
     <TableContainer>
@@ -58,10 +64,10 @@ export default function CollapsibleTable({
       >
         <TableHead>
           <TableRow sx={{ fontSize: "0.9rem" }}>
-            <TableCell>Grupo</TableCell>
+            <TableCell>Descrição</TableCell>
             <TableCell align="left">Orçado</TableCell>
             <TableCell align="left">Realizado</TableCell>
-            <TableCell align="left">Variação</TableCell>
+            <TableCell align="center">Variação</TableCell>
           </TableRow>
         </TableHead>
 
@@ -87,29 +93,32 @@ export default function CollapsibleTable({
               >
                 <TableCell>{row.descricao}</TableCell>
 
-                <TableCell align="right">
+                <TableCell align="left">
                   {row.orcado.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </TableCell>
 
-                <TableCell align="right">
+                <TableCell align="left">
                   {row.realizado.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </TableCell>
 
-                <TableCell align="right" sx={{ color: row.ui.color }}>
-                  {row.ui.icon} {Math.abs(row.variacao).toFixed(1)}%
+                <TableCell align="center" sx={{ color: row.ui.color }}>
+                  {row.ui.icon} {Math.abs(row.variacao).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}%
                 </TableCell>
               </TableRow>
             ))}
           {isSubGrupo &&
             subGrupos.map((row, index) => (
               <TableRow
-                key={row.id_grupo}
+                key={row.id_subgrupo}
                 onClick={() => onSelectSubGrupo(row)}
                 sx={(theme) => ({
                   "& td": {
@@ -142,7 +151,7 @@ export default function CollapsibleTable({
                 </TableCell>
 
                 <TableCell align="right" sx={{ color: row.ui.color }}>
-                  {row.ui.icon} {Math.abs(row.variacao).toFixed(1)}%
+                  {row.ui.icon} {Math.abs(row.variacao).toFixed(2)}%
                 </TableCell>
               </TableRow>
             ))}
