@@ -1,45 +1,77 @@
 "use client";
 
 import { useTheme } from "@mui/material";
-import { Area, AreaChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { TooltipTendenciaPorGrupo } from "../tooltip/tooltipTendenciaPorGrupo";
+import { useMemo } from "react";
 
 interface DataGrafico {
   mes: string;
   ordem: number;
-  realizado: number;
-  orcado: number;
+  realizado: number | null;
+  orcado: number | null;
 }
 
-export function GraficoTendenciaPorGrupo({ dataGrafico }: { dataGrafico: DataGrafico[] }) {
+export function GraficoTendenciaPorGrupo({dataGrafico}: {dataGrafico: DataGrafico[]}) {
   const theme = useTheme();
+ 
+  const tendencia = dataGrafico.map((item) => ({
+    ...item,
+    realizado: item.realizado === 0 ? null : item.realizado,
+  }));
 
-  const valores = dataGrafico
-    .flatMap(d => [d.realizado, d.orcado])
-    .filter(v => v > 0); // evita zero zoando escala
+  const domainY = useMemo<[number, number]>(() => {
+    const validRealizado = dataGrafico
+      .filter((d) => d.realizado !== null && d.realizado > 0)
+      .map((d) => d.realizado as number);
+    const validOrcado = dataGrafico
+      .filter((d) => d.orcado !== null && d.orcado > 0)
+      .map((d) => d.orcado as number);
+    const allValidY = [...validRealizado, ...validOrcado];
 
-  console.log(`Valores: ${valores}`)  
+    if (allValidY.length === 0) {
+      return [0, 10];
+    }
 
-  const min = Math.min(...valores);
-  const max = Math.max(...valores);
-  
-  const variacao = (max - min) / max;
-  
-  const range = max - min;
-  
-  console.log(`min: ${min}`) 
-  console.log(`max: ${max}`) 
-  console.log(`varicao: ${variacao}`) 
-  console.log(`range: ${range}`) 
+    let minY = Math.min(...allValidY);
+    let maxY = Math.max(...allValidY);
 
-  const padding =
-  range > 1_000_000
-    ? range * 0.01   // milhões → super sensível
-    : range * 0.01;  // valores menores → mais folga
+
+    if (validRealizado.length > 0) {
+      const minReal = Math.min(...validRealizado);
+      const maxReal = Math.max(...validRealizado);
+      const variation = minReal > 0 ? ((maxReal - minReal) / minReal) * 100 : 0;
+      const padding = variation < 0.8 ? 0.1 : 0.025;
+      minY = minY * (1 - padding);
+      maxY = maxY * (1 + padding);
+    }
+    console.log("Min Y com padding:", minY, "Max Y com padding:", maxY);
+    return [Math.max(0, minY), maxY];
+  }, [dataGrafico]);
+
+  const formatValue = (value: number): string => {
+    if (value >= 1000000) {
+      return `${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `${(value / 1000).toFixed(1)}K`;
+    }
+    return value.toLocaleString();
+  };
+      
 
   return (
-    <ResponsiveContainer width="100%" height={300} >
-      <AreaChart data={dataGrafico}>
+    <ResponsiveContainer width="100%" height={300}>
+      <AreaChart data={tendencia}>
         <defs>
           <linearGradient id="colorRealizado" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#00E676" stopOpacity={0.9} />
@@ -49,24 +81,11 @@ export function GraficoTendenciaPorGrupo({ dataGrafico }: { dataGrafico: DataGra
 
         <XAxis dataKey="mes" />
         <YAxis
-          domain={[min - padding, max + padding]}
-          tickCount={6}
-          allowDecimals={true}
-          tickFormatter={(value) =>
-            value >= 1_000_000
-              ? `${(value / 1_000_000).toFixed(1)}M`
-              : `${(value / 1_000).toFixed(0)}K`
-          }
+          domain={domainY}
+          tickFormatter={formatValue}
         />
-        {/* <YAxis
-          tickFormatter={(value) =>
-            value >= 1_000_000
-              ? `${(value / 1_000_000).toFixed(1)}M`
-              : `${(value / 1_000).toFixed(0)}K`
-          }
-        /> */}
-
         <Tooltip content={<TooltipTendenciaPorGrupo />} />
+        <Legend />
 
         <Area
           type="monotone"

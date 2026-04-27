@@ -20,7 +20,6 @@ import WifiTetheringIcon from "@mui/icons-material/WifiTethering";
 import SpeedIcon from "@mui/icons-material/Speed";
 
 const Dashboard = () => {
-
   const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(
     null,
   );
@@ -122,9 +121,7 @@ const Dashboard = () => {
                 justifyContent: "space-between",
               }}
             >
-              <Typography variant="h6">
-                {getTitulo()}
-              </Typography>
+              <Typography variant="h6">{getTitulo()}</Typography>
 
               {grupoSelecionado && (
                 <>
@@ -137,7 +134,7 @@ const Dashboard = () => {
                 </>
               )}
               <Chip
-                label={ mesSelecionado ? mesSelecionado.label : anoSelecionado}
+                label={mesSelecionado ? mesSelecionado.label : anoSelecionado}
                 color="primary"
                 sx={{ flexShrink: 0 }}
               />

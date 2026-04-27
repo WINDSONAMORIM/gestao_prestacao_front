@@ -47,9 +47,6 @@ export default function CollapsibleTable({
 
   const isSubGrupo = !!selectedGrupoId;
 
-  console.log("selectedGrupoId:", selectedGrupoId);
-  console.log("subGrupos:", subGrupos);
-
   return (
     <TableContainer>
       <Table
