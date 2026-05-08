@@ -1,4 +1,5 @@
-import { UseFinanceiroExcendenteAno } from "@/features/financeiro/use.financeiro";
+
+import { UseFinanceiroExcendenteAno } from "@/features/tendencia/use.tendencia";
 import {
   Table,
   TableBody,

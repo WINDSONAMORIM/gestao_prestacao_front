@@ -4,13 +4,13 @@ import { Box, Chip, Grid, Paper, Typography, useTheme } from "@mui/material";
 import { OrcadoCard } from "./components/orcadoCard";
 import { useOrcadoModo } from "../../features/orcado/use.orcado";
 import { useRealizadoModo } from "../../features/realizado/use.realizado";
-import CollapsibleTable from "../../modulos/financeiro/table/tableBase";
+import { CollapsibleTable } from "../../modulos/financeiro/table/tableBase";
 import { GraficoFinanceiro } from "@/modulos/financeiro/grafico";
 import { VariacaoPieChart } from "./components/vairacaoPieChart";
 import { NavBar } from "./components/navBar";
-import { ResumoUI } from "@/features/financeiro/financeiro.types";
+import { ResumoUI } from "@/features/resumoFinanceiro/financeiro.types";
 import { useState } from "react";
-import { meses } from "@/features/financeiro/financeiro.mapper";
+import { meses } from "@/features/resumoFinanceiro/financeiro.mapper";
 import { BreadcrumbsModern } from "@/modulos/financeiro/breadcrumbs";
 import { TableExcedente } from "@/modulos/financeiro/table/tableExcedente";
 import { FiltroPeriodo, Mes } from "@/modulos/financeiro/handleTabChange";
@@ -20,11 +20,8 @@ import WifiTetheringIcon from "@mui/icons-material/WifiTethering";
 import SpeedIcon from "@mui/icons-material/Speed";
 
 const Dashboard = () => {
-  const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(
-    null,
-  );
-  const [subGrupoSelecionado, setSubGrupoSelecionado] =
-    useState<ResumoUI | null>(null);
+  const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(null);
+  const [subGrupoSelecionado, setSubGrupoSelecionado] = useState<ResumoUI | null>(null);
   const [modo, setModo] = useState<"consolidado" | "mensal">("consolidado");
   const [mesSelecionado, setMesSelecionado] = useState<Mes | null>(null);
   const [anoSelecionado, setAnoSelecionado] = useState<number>(2026);
@@ -94,12 +91,7 @@ const Dashboard = () => {
         </Grid>
       </Grid>
       <Grid container spacing={1} paddingLeft={4}>
-        <BreadcrumbsModern
-          grupoSelecionado={grupoSelecionado}
-          subGrupoSelecionado={subGrupoSelecionado}
-          setGrupoSelecionado={setGrupoSelecionado}
-          setSubGrupoSelecionado={setSubGrupoSelecionado}
-        />
+        <BreadcrumbsModern />
       </Grid>
       <Grid container spacing={4} padding={2}>
         <Grid size={{ xs: 12, md: 8 }}>
@@ -158,19 +150,7 @@ const Dashboard = () => {
               display: "flex",
             }}
           >
-            <CollapsibleTable
-              selectedGrupoId={grupoSelecionado?.id_grupo}
-              onSelectGrupo={(grupo) => {
-                setGrupoSelecionado(grupo);
-                setSubGrupoSelecionado(null);
-              }}
-              onSelectSubGrupo={(subGrupo) => {
-                setSubGrupoSelecionado(subGrupo);
-              }}
-              anoSelecionado={anoSelecionado}
-              mesSelecionado={mesSelecionado?.value ?? meses[0].value}
-              modo={modo}
-            />
+            <CollapsibleTable modo={modo} anoSelecionado={anoSelecionado} mesSelecionado={mesSelecionado?.value ? mesSelecionado.value : 1 }/>
           </Paper>
         </Grid>
       </Grid>

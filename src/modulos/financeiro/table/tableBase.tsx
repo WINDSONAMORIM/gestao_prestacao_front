@@ -9,43 +9,45 @@ import {
   TableRow,
 } from "@mui/material";
 
-import {
-  UseFinanceiroResumoAnualPorGrupo,
-  UseFinanceiroResumoAnualPorSubGrupo,
-  UseFinanceiroResumoMensalPorGrupo,
-  UseFinanceiroResumoMensalPorSubGrupo,
-} from "@/features/financeiro/use.financeiro";
-import { ResumoUI } from "@/features/financeiro/financeiro.types";
+import { ResumoUI } from "@/features/resumoFinanceiro/financeiro.types";
+import { useDrillStore } from "@/store/drillStore";
+import { useFinanceiroResumo } from "@/features/resumoFinanceiro/useQuery";
 
-
-export default function CollapsibleTable({
-  onSelectGrupo,
-  onSelectSubGrupo,
-  selectedGrupoId,
-  anoSelecionado,
-  mesSelecionado,
-  modo
-}: {
-  onSelectGrupo: (row: ResumoUI) => void;
-  onSelectSubGrupo: (row: ResumoUI) => void;
-  selectedGrupoId?: string;
+interface Props {
+  modo: "mensal" | "consolidado";
   anoSelecionado: number;
   mesSelecionado: number;
-  modo: "consolidado" | "mensal";
-}) {
-  const { data: gruposAnual, loading: loadingGrupoAnual } = UseFinanceiroResumoAnualPorGrupo(anoSelecionado);
-  const { data: gruposMensal, loading: loadingGrupoMensal } = UseFinanceiroResumoMensalPorGrupo(anoSelecionado, mesSelecionado);
-  const { data: subGruposAnual, loading: loadingSubGrupoAnual } = UseFinanceiroResumoAnualPorSubGrupo(anoSelecionado, selectedGrupoId ?? "");
-  const { data: subGruposMensal, loading: loadingSubGrupoMensal } = UseFinanceiroResumoMensalPorSubGrupo(anoSelecionado, mesSelecionado, selectedGrupoId ?? "");
+}
 
-  const isMensal = modo === "mensal" && !!mesSelecionado;
-  const grupos = isMensal ? gruposMensal : gruposAnual;
-  const subGrupos = isMensal ? subGruposMensal : subGruposAnual;
-  const loading = isMensal ? loadingGrupoMensal : loadingGrupoAnual;
+export const CollapsibleTable = ({
+  modo,
+  anoSelecionado,
+  mesSelecionado,
+}: Props) => {
+  const {
+    level,
+    grupoId,
+    subgrupoId,
+    drillDownGrupo,
+    drillDownSubgrupo,
+  } = useDrillStore();
 
-  if (loading) return <span>Carregando...</span>;
+  const { data: rows = [], isLoading } = useFinanceiroResumo({
+    nivel: level,
+    modo,
+    ano: anoSelecionado,
+    mes: mesSelecionado,
+    grupoId,
+    subgrupoId,
+  });
 
-  const isSubGrupo = !!selectedGrupoId;
+  const handleRowClick = (row: ResumoUI) => {
+    if (level === "grupo") {
+      drillDownGrupo(row.id_grupo!, row.descricao);
+    } else if (level === "subgrupo") {
+      drillDownSubgrupo(row.id_subgrupo!, row.descricao);
+    }
+  };
 
   return (
     <TableContainer>
@@ -60,7 +62,7 @@ export default function CollapsibleTable({
         }}
       >
         <TableHead>
-          <TableRow sx={{ fontSize: "0.9rem" }}>
+          <TableRow>
             <TableCell>Descrição</TableCell>
             <TableCell align="left">Orçado</TableCell>
             <TableCell align="left">Realizado</TableCell>
@@ -69,91 +71,61 @@ export default function CollapsibleTable({
         </TableHead>
 
         <TableBody>
-          {!isSubGrupo &&
-            grupos.map((row, index) => (
-              <TableRow
-                key={row.id_grupo}
-                onClick={() => onSelectGrupo(row)}
-                sx={(theme) => ({
-                  "& td": {
-                    fontSize: "0.6rem",
-                  },
-                  backgroundColor:
-                    index % 2 === 0
-                      ? theme.palette.action.hover
-                      : theme.palette.background.paper,
-                  transition: "0.2s",
-                  "&:hover": {
-                    backgroundColor: theme.palette.action.selected,
-                  },
+          {rows.map((row, index) => (
+            <TableRow
+              key={
+                level === "grupo"
+                  ? `g-${row.id_grupo}`
+                  : level === "subgrupo"
+                    ? `sg-${row.id_subgrupo}`
+                    : `r-${row.id_rubrica}`
+              }
+              onClick={
+                level !== "rubrica" ? () => handleRowClick(row) : undefined
+              }
+              sx={(theme) => ({
+                "& td": {
+                  fontSize: "0.7rem",
+                },
+                backgroundColor:
+                  index % 2 === 0
+                    ? theme.palette.action.hover
+                    : theme.palette.background.paper,
+                transition: "0.2s",
+                "&:hover": {
+                  backgroundColor: theme.palette.action.selected,
+                  cursor: level !== "rubrica" ? "pointer" : "default",
+                },
+              })}
+            >
+              <TableCell>{row.descricao}</TableCell>
+
+              <TableCell align="left">
+                {row.orcado.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                 })}
-              >
-                <TableCell>{row.descricao}</TableCell>
+              </TableCell>
 
-                <TableCell align="left">
-                  {row.orcado.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </TableCell>
-
-                <TableCell align="left">
-                  {row.realizado.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </TableCell>
-
-                <TableCell align="center" sx={{ color: row.ui.color }}>
-                  {row.ui.icon} {Math.abs(row.variacao).toLocaleString('pt-BR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}%
-                </TableCell>
-              </TableRow>
-            ))}
-          {isSubGrupo &&
-            subGrupos.map((row, index) => (
-              <TableRow
-                key={row.id_subgrupo}
-                onClick={() => onSelectSubGrupo(row)}
-                sx={(theme) => ({
-                  "& td": {
-                    fontSize: "0.6rem",
-                  },
-                  backgroundColor:
-                    index % 2 === 0
-                      ? theme.palette.action.hover
-                      : theme.palette.background.paper,
-                  transition: "0.2s",
-                  "&:hover": {
-                    backgroundColor: theme.palette.action.selected,
-                  },
+              <TableCell align="left">
+                {row.realizado.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
                 })}
-              >
-                <TableCell>{row.descricao}</TableCell>
+              </TableCell>
 
-                <TableCell align="right">
-                  {row.orcado.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </TableCell>
-
-                <TableCell align="right">
-                  {row.realizado.toLocaleString("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
-                </TableCell>
-
-                <TableCell align="right" sx={{ color: row.ui.color }}>
-                  {row.ui.icon} {Math.abs(row.variacao).toFixed(2)}%
-                </TableCell>
-              </TableRow>
-            ))}
+              <TableCell align="center" sx={{ color: row.ui?.color }}>
+                {row.ui?.icon}{" "}
+                {Math.abs(row.variacao).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                %
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
-}
+};

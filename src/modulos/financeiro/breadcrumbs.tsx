@@ -1,82 +1,71 @@
 "use client";
 
-import { Breadcrumbs as MUIBreadcrumbs, Link, Typography, Box } from "@mui/material";
+import {
+  Breadcrumbs as MUIBreadcrumbs,
+  Link,
+  Typography,
+  Box,
+} from "@mui/material";
+
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import HomeIcon from "@mui/icons-material/Home";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import InsightsIcon from "@mui/icons-material/Insights";
-import GroupsIcon from '@mui/icons-material/Groups';
+import GroupsIcon from "@mui/icons-material/Groups";
+
 import { motion } from "framer-motion";
-
-import { ResumoUI } from "@/features/financeiro/financeiro.types";
-
-interface Props {
-  grupoSelecionado: ResumoUI | null;
-  subGrupoSelecionado: ResumoUI | null;
-  setGrupoSelecionado: React.Dispatch<React.SetStateAction<ResumoUI | null>>;
-  setSubGrupoSelecionado: React.Dispatch<React.SetStateAction<ResumoUI | null>>;
-}
+import { useDrillStore } from "@/store/drillStore";
 
 const MotionLink = motion.create(Link);
 
-export const BreadcrumbsModern = ({
-  grupoSelecionado,
-  subGrupoSelecionado,
-  setGrupoSelecionado,
-  setSubGrupoSelecionado,
-}: Props) => {
+export const BreadcrumbsModern = () => {
+  const {
+    grupoDescricao,
+    subgrupoDescricao,
+    level,
+    reset,
+    voltar,
+  } = useDrillStore();
+
   return (
     <Box sx={{ mb: 2 }}>
       <MUIBreadcrumbs
         separator={<NavigateNextIcon fontSize="small" />}
         aria-label="breadcrumb"
       >
+        {/* 🏠 GERAL */}
         <MotionLink
           underline="hover"
           color="inherit"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 0.5,
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            setGrupoSelecionado(null);
-            setSubGrupoSelecionado(null);
-          }}
+          sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}
+          onClick={reset}
           whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300 }}
         >
           <HomeIcon fontSize="small" />
           Geral
         </MotionLink>
 
-        {grupoSelecionado && (
+        {/* 📊 GRUPO */}
+        {grupoDescricao && (
           <MotionLink
             underline="hover"
             color="inherit"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0.5,
-              cursor: "pointer",
-            }}
-            onClick={() => setSubGrupoSelecionado(null)}
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
+            sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}
+            onClick={voltar}
             whileHover={{ scale: 1.05 }}
           >
-            {grupoSelecionado.descricao === "PESSOAL E REFLEXO" ? <GroupsIcon /> :
-            <BarChartIcon fontSize="small" />}
-            {grupoSelecionado.descricao}
+            {grupoDescricao === "PESSOAL E REFLEXO" ? (
+              <GroupsIcon />
+            ) : (
+              <BarChartIcon fontSize="small" />
+            )}
+            {grupoDescricao}
           </MotionLink>
         )}
 
-        {subGrupoSelecionado && (
-          <motion.div
-            initial={{ opacity: 0, y: -5 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+        {/* 📈 SUBGRUPO */}
+        {subgrupoDescricao && (
+          <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>
             <Typography
               sx={{
                 display: "flex",
@@ -87,7 +76,7 @@ export const BreadcrumbsModern = ({
               }}
             >
               <InsightsIcon fontSize="small" />
-              {subGrupoSelecionado.descricao}
+              {subgrupoDescricao}
             </Typography>
           </motion.div>
         )}

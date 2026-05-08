@@ -1,49 +1,65 @@
 "use client";
 
-import { useTheme } from "@mui/material";
-
-import { UseFinanceiroResumoAnualPorGrupo, UseFinanceiroTendenciaPorGrupo } from "../../features/financeiro/use.financeiro";
-import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
-import { meses } from "@/features/financeiro/financeiro.mapper";
+import { useEffect, useState } from "react";
+import { Box, Tabs, Tab } from "@mui/material";
+import { useDrillStore } from "@/store/drillStore";
+import { useFinanceiroResumo } from "@/features/resumoFinanceiro/useQuery";
 import { GraficoFinanceiroConsolidado } from "./grafico/graficoConsolidadoAnual";
 import { GraficoTendenciaPorGrupo } from "./grafico/graficoTendenciaPorGrupo";
 
-export function GraficoFinanceiro({ selecionado,ano, mes, modo }: { selecionado: ResumoPorGrupo | null, ano: number, mes:number, modo:string }) {
-  const theme = useTheme();
-  const { data }: { data: ResumoPorGrupo[] } = UseFinanceiroResumoAnualPorGrupo(ano);
-  const grupoId = selecionado?.id_grupo;
 
-  const {data: tendencia = []} = UseFinanceiroTendenciaPorGrupo(grupoId);
+type TipoGrafico = "consolidado" | "tendencia";
 
-  const dataGrafico = meses.map((mes, index) => {
+export function GraficoFinanceiro({
+  modo,
+  ano,
+  mes,
+}: {
+  modo: "mensal" | "consolidado";
+  ano: number;
+  mes: number;
+}) {
+  const [tipo, setTipo] = useState<TipoGrafico>("consolidado");
 
-  const registro = tendencia.find(t => Number(t.mes) === index + 1);
-    return {
-      mes: mes.label,
-      ordem: mes.value,
-      realizado: registro?.realizado || 0,
-      orcado: registro?.orcado || 0,
-    };
+  const { level, grupoId } = useDrillStore();
+
+  const { data = [] } = useFinanceiroResumo({
+    nivel: level,
+    modo,
+    ano,
+    mes,
+    grupoId,
   });
 
-  const dataFiltrada = selecionado
-    ? data.filter((item) => item.id_grupo === selecionado.id_grupo)
-    : data;
+  const handleChange = (_: any, value: TipoGrafico) => {
+    if (value) setTipo(value);
+    console.log(`change: ${value}`)
+  };
 
-  const dataComPercentual = dataFiltrada.map((item) => ({
-    ...item,
-    percentual: item.orcado
-      ? (item.realizado / item.orcado) * 100
-      : 0,
-  }));
-
-  if (selecionado) {
-    
-    return (
-      <GraficoTendenciaPorGrupo dataGrafico={dataGrafico} />
-    );
+  useEffect(() => {
+  if (!grupoId && tipo === "tendencia") {
+    setTipo("consolidado");
   }
+}, [grupoId, tipo]);
+
   return (
-    <GraficoFinanceiroConsolidado selecionado={selecionado} ano={ano} mes={mes} modo={modo}/>
+    <Box>
+      <Tabs
+        value={tipo}
+        // exclusive
+        onChange={handleChange}
+        // size="small"
+        sx={{ mb: 2 }}
+      >
+        <Tab value="consolidado" label ="Consolidado" />
+        <Tab value="tendencia" disabled={!grupoId} label = "Tendência" />
+      </Tabs>
+
+      {tipo === "consolidado" ? (
+        <GraficoFinanceiroConsolidado data={data} />
+      ) : (
+        <GraficoTendenciaPorGrupo grupoId={grupoId} />
+      )}
+    </Box>
   );
 }

@@ -1,6 +1,6 @@
-import { getResumoAnualPorGrupo, getResumoAnualPorSubGrupo, getResumoMensalPorGrupo, getResumoMensalPorSubgrupo, getTendenciaPorGrupo, getTopExcedenteAnual,  } from "@/features/financeiro/financeiro.service";
-import { getResumoPorGrupoMock, getResumoPorSubgrupoMock, getTendenciaPorGrupoMock } from "./financeiro.mock";
-import { ExcedenteAno, ResumoPorGrupo, ResumoUI, TendenciaPorGrupo } from "./financeiro.types";
+import { getResumoAnualPorGrupo, getResumoAnualPorRubrica, getResumoAnualPorSubGrupo, getResumoMensalPorGrupo, getResumoMensalPorRubrica, getResumoMensalPorSubgrupo } from "@/features/resumoFinanceiro/financeiro.service";
+import { getResumoPorGrupoMock, getResumoPorSubgrupoMock } from "./financeiro.mock";
+import { ResumoPorGrupo, ResumoUI, TendenciaPorGrupo } from "./financeiro.types";
 import { Theme } from "@mui/material";
 import { mapResumo } from "./financeiro.mapper";
 
@@ -60,42 +60,29 @@ export const fetchResumoMensalPorSubgrupo = async(theme: Theme, ano: number, mes
     return data.map((item) => mapResumo(item, theme))
 }
 
-export const fetchTendenciaPorGrupo = async (grupoId: string): Promise<TendenciaPorGrupo[]> =>{
-    let data: TendenciaPorGrupo[]
-    
+export const fetchResumoAnualPorRubrica = async(theme: Theme, ano: number, grupoId: string, subgrupoId: string): Promise<ResumoUI[]> => {
+    let data: ResumoPorGrupo[]
     if (USE_MOCK){
         await new Promise((r) => setTimeout(r, 500));
-        data = getTendenciaPorGrupoMock().data;
+        data = getResumoPorSubgrupoMock().data;
     }else{
-        const response = await getTendenciaPorGrupo(grupoId)
+        const response = await getResumoAnualPorRubrica(ano, grupoId, subgrupoId)
+        console.log("Provider Anual Rubrica: ", response)
         data = response.data
     }
-    
-    return data
+    return data.map((item) => mapResumo(item, theme))
 }
 
-export const fetchExcedenteAno = async (ano: number) : Promise<ExcedenteAno[]> =>{
-    let data: ExcedenteAno[]
+export const fetchResumoMensalPorRubrica = async(theme: Theme, ano: number, mes: number, grupoId: string, subgrupoId: string): Promise<ResumoUI[]> => {
+    let data: ResumoPorGrupo[]
     if (USE_MOCK){
-        return [
-          {
-            id_grupo: "09",
-            orcado: 6806641.8,
-            realizado: 1177490.19,
-            diferenca: -5629151.61,
-            perc: 17.3,
-          },
-          {
-            id_grupo: "10",
-            orcado: 0,
-            realizado: 279.09,
-            diferenca: 279.09,
-            perc: 0,
-          },
-        ];
+        await new Promise((r) => setTimeout(r, 500));
+        data = getResumoPorSubgrupoMock().data;
     }else{
-        const response = await getTopExcedenteAnual(ano)
-        data = response.data ?? []
+        const response = await getResumoMensalPorRubrica(ano, mes, grupoId, subgrupoId)
+        console.log(`Params: ${subgrupoId}`)
+        console.log("Provider Mensal Rubrica: ", response)
+        data = response.data
     }
-    return data
+    return data.map((item) => mapResumo(item, theme))
 }

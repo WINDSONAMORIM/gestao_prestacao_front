@@ -1,4 +1,4 @@
-import { ResumoPorGrupo } from "@/features/financeiro/financeiro.types";
+import { ResumoPorGrupo } from "@/features/resumoFinanceiro/financeiro.types";
 
 interface ResumoTooltipItem {
   id: string;

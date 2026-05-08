@@ -9,8 +9,14 @@ export const mapResumo = (
   const orcado = item.orcado ?? 0;
   const realizado = item.realizado ?? 0;
 
-  let variacao = ((realizado - orcado) / orcado) * 100;
-  
+  let variacao = 0;
+
+  if(orcado === 0){
+    variacao = realizado === 0 ? 0 : realizado;
+  }else{
+    variacao = ((realizado - orcado) / orcado) * 100;
+  } 
+
   const isPositivo = variacao > 0;
   const isNegativo = variacao < 0;
 
@@ -21,7 +27,7 @@ export const mapResumo = (
     : "";
 
  if (orcado === 0 && realizado > 0) {
-  variacao = realizado; // ou outro valor
+  variacao = realizado;
   icon = "▼";
 }   
 
@@ -42,6 +48,13 @@ export const mapResumo = (
     },
   };
 }
+
+export const mapResumoList = (
+  data: ResumoPorGrupo[],
+  theme: Theme
+): ResumoUI[] => {
+  return data.map((item) => mapResumo(item, theme));
+};
 
 export const meses = [
   { label: "Jan", value: 1 },
