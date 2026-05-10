@@ -132,7 +132,7 @@ const Dashboard = () => {
               />
             </Box>
             <GraficoFinanceiro
-              selecionado={grupoSelecionado}
+              // selecionado={grupoSelecionado}
               ano={anoSelecionado}
               mes={mesSelecionado?.value ?? 0}
               modo={modo}

@@ -155,20 +155,22 @@ export const NavBar = () => {
         <Toolbar
           sx={{
             display: "flex",
-            justifyContent: "space-between"
+            justifyContent: "space-between",
           }}
         >
-
-          <Box sx={{display:"flex"}          }>
-          <img src={"../assets/icons/logo_imed.png"} width="50" height="50"/>
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", ml:4 }}>
-            <Typography variant="h6">
-              HOSPITAL MUNICIPAL BRASILANDIA
-            </Typography>
-            <Typography>
-              Analise de Dados para Gestão Hospitalar
-            </Typography>
-          </Box>
+          <Box sx={{ display: "flex" }}>
+            <img src={"../assets/icons/logo.png"} width="50" height="50" />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                ml: 4,
+              }}
+            >
+              <Typography variant="h6">HOSPITAL MUNICIPAL</Typography>
+              <Typography>Analise de Dados para Gestão Hospitalar</Typography>
+            </Box>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Search sx={{ justifyContent: "flex-end" }}>
