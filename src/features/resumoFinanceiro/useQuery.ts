@@ -9,6 +9,7 @@ import {
 } from "./financeiro.service";
 import {  mapResumo } from "./financeiro.mapper";
 import { useTheme } from "@mui/material";
+import { ResumoPorGrupo } from "./financeiro.types";
 
 type Nivel = "grupo" | "subgrupo" | "rubrica";
 
@@ -37,7 +38,7 @@ export const useFinanceiroResumo = ({
     queryKey: ["financeiro", nivel, modo, ano, mes, grupoId, subgrupoId],
 
     queryFn: async () => {
-  let result = [];
+  let result : ResumoPorGrupo[] = [];
 
   if (nivel === "grupo") {
     result = modo === "mensal"

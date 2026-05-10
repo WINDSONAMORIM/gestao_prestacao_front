@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { Box, Tabs, Tab } from "@mui/material";
 import { useDrillStore } from "@/store/drillStore";
 import { useFinanceiroResumo } from "@/features/resumoFinanceiro/useQuery";
@@ -23,6 +23,8 @@ export function GraficoFinanceiro({
 
   const { level, grupoId } = useDrillStore();
 
+  const tipoGrafico = !grupoId ? "consolidado" : tipo
+
   const { data = [] } = useFinanceiroResumo({
     nivel: level,
     modo,
@@ -31,16 +33,16 @@ export function GraficoFinanceiro({
     grupoId,
   });
 
-  const handleChange = (_: any, value: TipoGrafico) => {
+  const handleChange = (_: SyntheticEvent, value: TipoGrafico) => {
     if (value) setTipo(value);
     console.log(`change: ${value}`)
   };
 
-  useEffect(() => {
-  if (!grupoId && tipo === "tendencia") {
-    setTipo("consolidado");
-  }
-}, [grupoId, tipo]);
+//   useEffect(() => {
+//   if (!grupoId && tipo === "tendencia") {
+//     setTipo("consolidado");
+//   }
+// }, [grupoId, tipo]);
 
   return (
     <Box>
