@@ -1,6 +1,6 @@
 import { Divider } from "@mui/material";
 import Dashboard from "./dashboard/page";
-import { IntegrationsPage } from "./integrations/page";
+import IntegrationsPage from "./integrations/page";
 
 export default function Home() {
   return (
