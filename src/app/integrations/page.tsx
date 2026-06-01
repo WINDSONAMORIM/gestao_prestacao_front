@@ -23,6 +23,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { useState } from "react";
 import Image from "next/image";
+import { getToken } from "./myFlux/integrations.myflux.service";
 
 const IntegrationsPage = () => {
   const style = {
@@ -45,7 +46,8 @@ const IntegrationsPage = () => {
   const [open, setOpen] = useState(false);
   const [visiblePassword, setVisiblePassword] = useState(true);
   const [connected, setConnected] = useState(false);
-
+  const [username, setUsername] = useState("") 
+  const [password, setPassword] = useState("")
   const handleClose = () => setOpen(false);
 
   const handleOpen = () => setOpen(true);
@@ -54,8 +56,12 @@ const IntegrationsPage = () => {
     setVisiblePassword((prev)=>!prev)
   }
 
-  const handleConection = () => {
-    setConnected((prev)=>!prev)
+  const handleConection = async () => {
+    const result = await getToken(username, password);
+    if (result.statusCode === 200) {
+      setConnected(true)
+      setOpen(false)
+    }
   }
 
   return (
@@ -187,7 +193,7 @@ const IntegrationsPage = () => {
             <AccountCircleIcon
               sx={{ marginRight: "20px", marginLeft: "5px" }}
             />
-            <TextField label="Usuario" variant="standard" fullWidth />
+            <TextField label="Usuario" variant="standard" value={username} onChange={(e) => setUsername(e.target.value)}fullWidth />
           </Box>
           <Box
             sx={{
@@ -206,6 +212,8 @@ const IntegrationsPage = () => {
             <TextField
               label="Senha"
               variant="standard"
+              value={password}
+              onChange={(e)=> setPassword(e.target.value)}
               fullWidth
               type={visiblePassword ? "password" : "text"}
             />
