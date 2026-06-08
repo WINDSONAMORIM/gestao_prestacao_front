@@ -12,7 +12,6 @@ import {
   Modal,
   TextField,
   Typography,
-  Input,
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -23,7 +22,13 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { useState } from "react";
 import Image from "next/image";
-import { getToken } from "./myFlux/integrations.myflux.service";
+import { getToken, previewTable } from "./myFlux/integrations.myflux.service";
+import TableMy from "./components/table";
+
+export interface ApiTableResponse {
+  headers: string[];
+  data: Record<string, string>[];
+}
 
 const IntegrationsPage = () => {
   const style = {
@@ -48,6 +53,7 @@ const IntegrationsPage = () => {
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState("") 
   const [password, setPassword] = useState("")
+  const [tableData, setTableData] = useState<ApiTableResponse | null>(null)
   const handleClose = () => setOpen(false);
 
   const handleOpen = () => setOpen(true);
@@ -63,6 +69,18 @@ const IntegrationsPage = () => {
       setOpen(false)
     }
   }
+
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const result = await previewTable(file);
+
+    setTableData(result);
+  };
 
   return (
     <>
@@ -164,7 +182,7 @@ const IntegrationsPage = () => {
             }}
           >
             Selecionar Arquivo
-            <input hidden type="file" />
+            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange}/>
           </Button>
         </>
       ) : null}
@@ -221,6 +239,9 @@ const IntegrationsPage = () => {
           <Button onClick={handleConection}>Conectar</Button>
         </Box>
       </Modal>
+      { tableData && (
+        <TableMy data={tableData} />
+      )}
     </>
   );
 };

@@ -8,3 +8,14 @@ export const getToken = async (username: string, password:string): Promise<any> 
     console.log(response.data)
     return response.data;
 };
+
+export const previewTable = async (file: File) : Promise<any> => {
+    const form = new FormData()
+    form.append("file", file)
+    const reponse = await connection.post<any>(`/downloadProcess-preview`, form,{
+        headers:{
+            "Content-Type" : "multipart/form-data",
+        }
+    })
+    return reponse.data
+}
