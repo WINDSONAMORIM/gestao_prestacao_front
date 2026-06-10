@@ -22,13 +22,15 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { useState } from "react";
 import Image from "next/image";
-import { getToken, previewTable } from "./myFlux/integrations.myflux.service";
+import { downloadProcess, getToken, previewTable } from "./myFlux/integrations.myflux.service";
 import TableMy from "./components/table";
+import { TableResponseApi } from "@/types/apiResponse";
+import { ProcessoMyflux } from "./myFlux/myFlux.types";
 
-export interface ApiTableResponse {
-  headers: string[];
-  data: Record<string, string>[];
-}
+// export interface ApiTableResponse {
+//   headers: string[];
+//   data: Record<string, string>[];
+// }
 
 const IntegrationsPage = () => {
   const style = {
@@ -53,7 +55,8 @@ const IntegrationsPage = () => {
   const [connected, setConnected] = useState(false);
   const [username, setUsername] = useState("") 
   const [password, setPassword] = useState("")
-  const [tableData, setTableData] = useState<ApiTableResponse | null>(null)
+  // const [tableData, setTableData] = useState<ApiTableResponse | null>(null)
+  const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null)
   const handleClose = () => setOpen(false);
 
   const handleOpen = () => setOpen(true);
@@ -81,6 +84,10 @@ const IntegrationsPage = () => {
 
     setTableData(result);
   };
+
+  const setDownload = async (tableData:ApiTableResponse) =>{
+    const result = await downloadProcess(tableData.data)
+  }
 
   return (
     <>
@@ -240,8 +247,9 @@ const IntegrationsPage = () => {
         </Box>
       </Modal>
       { tableData && (
-        <TableMy data={tableData} />
+        <TableMy headers= {tableData.headers} data={tableData.data} />
       )}
+      <Button onClick={()=>{setDownload(tableData)}} variant="contained"> Download </Button>
     </>
   );
 };

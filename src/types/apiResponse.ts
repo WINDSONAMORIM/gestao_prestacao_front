@@ -4,3 +4,8 @@ export interface ApiResponse<T> {
   message: string;
   data: T;
 }
+
+export interface TableResponseApi<T>{
+  headers: string[];
+  data: T[]
+}

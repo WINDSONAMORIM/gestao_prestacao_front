@@ -2,24 +2,25 @@
 
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import CloudQueueIcon from '@mui/icons-material/CloudQueue';
-import { previewTable } from "../myFlux/integrations.myflux.service";
+import { TableResponseApi } from "@/types/apiResponse";
+import { ProcessoMyflux } from "../myFlux/myFlux.types";
 
-export interface ApiTableResponse {
-  headers: string[];
-  data: Record<string, string>[];
-}
+// export interface ApiTableResponse {
+//   headers: string[];
+//   data: Record<string, string>[];
+// }
 
-interface TableMyProps {
-    data: ApiTableResponse;
-}
+// interface TableMyProps {
+//     data: ApiTableResponse;
+// }
 
-const TableMy = ({ data }: TableMyProps) => {
+const TableMy = ({ headers, data }: TableResponseApi<ProcessoMyflux>) => {
     return (
         <TableContainer component={Paper}>
            <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
                 <TableHead>
                     <TableRow>
-                        {data.headers.map((h, index) => (
+                        {headers.map((h, index) => (
                             <TableCell key={index}>
                                 {h}
                             </TableCell>
@@ -29,13 +30,16 @@ const TableMy = ({ data }: TableMyProps) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.data.map((row, rindex) => (
+                    {data.map((row, rindex) => (
                         <TableRow key={rindex}>
-                            {data.headers.map((cell, cindex) => (
-                                <TableCell key={cindex}>
-                                    {row[cell]}
+                            {/* {row.map((cell, cindex) => ( */}
+                                <TableCell >
+                                    {row.Id}
                                 </TableCell>
-                            ))}
+                                <TableCell >
+                                    {row.Seq}
+                                </TableCell>
+                            {/* ))} */}
                             <TableCell><CloudQueueIcon /></TableCell>
                         </TableRow>
                     ))}
