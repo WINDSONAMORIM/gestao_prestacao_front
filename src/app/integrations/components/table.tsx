@@ -1,46 +1,69 @@
 "use client"
 
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
-import CloudQueueIcon from '@mui/icons-material/CloudQueue';
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "../myFlux/myFlux.types";
-
-// export interface ApiTableResponse {
-//   headers: string[];
-//   data: Record<string, string>[];
-// }
-
-// interface TableMyProps {
-//     data: ApiTableResponse;
-// }
+import ErrorIcon from "@mui/icons-material/Error";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DownloadingIcon from '@mui/icons-material/Downloading';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 const TableMy = ({ headers, data }: TableResponseApi<ProcessoMyflux>) => {
+
     return (
-        <TableContainer component={Paper}>
-           <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+        <TableContainer>
+            <Table size="small" aria-label="a dense table">
                 <TableHead>
-                    <TableRow>
+                    <TableRow
+                        sx={{
+                            backgroundColor: "primary.main",
+                        }}>
                         {headers.map((h, index) => (
-                            <TableCell key={index}>
+                            <TableCell key={index}
+                                sx={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                }}>
                                 {h}
                             </TableCell>
                         ))
                         }
-                        <TableCell>Status</TableCell>
+                        <TableCell sx={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                }}>Status</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {data.map((row, rindex) => (
-                        <TableRow key={rindex}>
-                            {/* {row.map((cell, cindex) => ( */}
-                                <TableCell >
-                                    {row.Id}
-                                </TableCell>
-                                <TableCell >
-                                    {row.Seq}
-                                </TableCell>
-                            {/* ))} */}
-                            <TableCell><CloudQueueIcon /></TableCell>
+                        <TableRow hover
+                            key={row.Id}
+                            sx={{
+                                "&:hover": {
+                                    cursor: "pointer",
+                                },
+                            }}>
+                            <TableCell >
+                                {row.Seq}
+                            </TableCell>
+                            <TableCell >
+                                {row.Id}
+                            </TableCell>
+                            {row.status === "pendente" && (
+                                <MoreHorizIcon />
+                            )}
+
+                            {row.status === "baixando" && (
+                                <DownloadingIcon color="warning"/>
+                            )}
+
+                            {row.status === "concluido" && (
+                                <CheckCircleIcon color="success"/>
+                            )}
+
+                            {row.status === "erro" && (
+                                <ErrorIcon color="error"/>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

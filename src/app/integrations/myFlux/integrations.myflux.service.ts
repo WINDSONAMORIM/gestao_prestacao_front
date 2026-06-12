@@ -1,5 +1,6 @@
 import { connection } from "@/service/connection"
 import { ProcessoMyflux } from "./myFlux.types";
+import { TableResponseApi } from "@/types/apiResponse";
 
 export const getToken = async (username: string, password:string): Promise<any> => {
     const body = {
@@ -10,24 +11,27 @@ export const getToken = async (username: string, password:string): Promise<any> 
     return response.data;
 };
 
-export const previewTable = async (file: File) : Promise<ProcessoMyflux> => {
+export const previewTable = async (file: File) : Promise<TableResponseApi<ProcessoMyflux>> => {
     const form = new FormData()
     form.append("file", file)
-    const response = await connection.post<ProcessoMyflux>(`/downloadProcess-preview`, form,{
+    const response = await connection.post<TableResponseApi<ProcessoMyflux>>(`/downloadProcess-preview`, form,{
         headers:{
             "Content-Type" : "multipart/form-data",
         }
     })
     console.log("preview table",response)
-    const data = response.data
-    return data
+    const {headers, data} = response.data
+    return {headers,data}
 }
 
-export const downloadProcess = async (processos: ProcessoMyflux[]) : Promise<any> => {
-    const body = {
-
+export const downloadProcess = async (processos: ProcessoMyflux[], token: string) : Promise<Blob> => {
+    const response = await connection.post(`/downloadProcess`, processos,{
+        headers:{
+            Authorization: `Bearer ${token}`
+        },
+        responseType:"blob"
     }
-    const response = await connection.post<any>(`/downloadProcess`, body)
+)
 
-    return response;
+    return response.data;
 }

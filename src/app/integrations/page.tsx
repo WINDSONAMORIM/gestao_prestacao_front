@@ -12,6 +12,7 @@ import {
   Modal,
   TextField,
   Typography,
+  Paper,
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -20,17 +21,12 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { downloadProcess, getToken, previewTable } from "./myFlux/integrations.myflux.service";
 import TableMy from "./components/table";
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "./myFlux/myFlux.types";
-
-// export interface ApiTableResponse {
-//   headers: string[];
-//   data: Record<string, string>[];
-// }
 
 const IntegrationsPage = () => {
   const style = {
@@ -53,20 +49,54 @@ const IntegrationsPage = () => {
   const [open, setOpen] = useState(false);
   const [visiblePassword, setVisiblePassword] = useState(true);
   const [connected, setConnected] = useState(false);
-  const [username, setUsername] = useState("") 
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  // const [tableData, setTableData] = useState<ApiTableResponse | null>(null)
   const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null)
+  const [token, setToken] = useState("")
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}/downloadProcess/events`
+    );
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      setTableData((old) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          data: old.data.map((item) =>
+            item.Id === data.processoId
+              ? {
+                ...item,
+                status: data.status,
+              }
+              : item
+          ),
+        };
+      });
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+
   const handleClose = () => setOpen(false);
 
   const handleOpen = () => setOpen(true);
 
-  const handleTogglePassword = () =>{
-    setVisiblePassword((prev)=>!prev)
+  const handleTogglePassword = () => {
+    setVisiblePassword((prev) => !prev)
   }
 
   const handleConection = async () => {
     const result = await getToken(username, password);
+    setToken(result.data.token)
+    console.log(token)
     if (result.statusCode === 200) {
       setConnected(true)
       setOpen(false)
@@ -85,8 +115,20 @@ const IntegrationsPage = () => {
     setTableData(result);
   };
 
-  const setDownload = async (tableData:ApiTableResponse) =>{
-    const result = await downloadProcess(tableData.data)
+  const setDownload = async () => {
+    if (!tableData) return
+    const blob = await downloadProcess(tableData.data, token);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "processos.zip";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
   }
 
   return (
@@ -189,7 +231,7 @@ const IntegrationsPage = () => {
             }}
           >
             Selecionar Arquivo
-            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange}/>
+            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
           </Button>
         </>
       ) : null}
@@ -218,7 +260,7 @@ const IntegrationsPage = () => {
             <AccountCircleIcon
               sx={{ marginRight: "20px", marginLeft: "5px" }}
             />
-            <TextField label="Usuario" variant="standard" value={username} onChange={(e) => setUsername(e.target.value)}fullWidth />
+            <TextField label="Usuario" variant="standard" value={username} onChange={(e) => setUsername(e.target.value)} fullWidth />
           </Box>
           <Box
             sx={{
@@ -238,7 +280,7 @@ const IntegrationsPage = () => {
               label="Senha"
               variant="standard"
               value={password}
-              onChange={(e)=> setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               fullWidth
               type={visiblePassword ? "password" : "text"}
             />
@@ -246,10 +288,26 @@ const IntegrationsPage = () => {
           <Button onClick={handleConection}>Conectar</Button>
         </Box>
       </Modal>
-      { tableData && (
-        <TableMy headers= {tableData.headers} data={tableData.data} />
+      {tableData && (
+        <Box
+          m={4}
+          display="flex"
+          justifyContent="center"
+        >
+          <Paper
+            elevation={3}
+            sx={{
+              width: "100%",
+              maxWidth: 1000,
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <TableMy headers={tableData.headers} data={tableData.data} />
+          </Paper>
+        </Box>
       )}
-      <Button onClick={()=>{setDownload(tableData)}} variant="contained"> Download </Button>
+      <Button onClick={setDownload} variant="contained"> Download </Button>
     </>
   );
 };
