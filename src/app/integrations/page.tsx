@@ -27,6 +27,7 @@ import { downloadProcess, getToken, previewTable } from "./myFlux/integrations.m
 import TableMy from "./components/table";
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "./myFlux/myFlux.types";
+import { useDownloadEvents } from "./myFlux/integrations.myflux.useDownLoadEvents";
 
 const IntegrationsPage = () => {
   const style = {
@@ -54,36 +55,7 @@ const IntegrationsPage = () => {
   const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null)
   const [token, setToken] = useState("")
 
-  useEffect(() => {
-    const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_BASE_API_URL}/downloadProcess/events`
-    );
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-
-      setTableData((old) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          data: old.data.map((item) =>
-            item.Id === data.processoId
-              ? {
-                ...item,
-                status: data.status,
-              }
-              : item
-          ),
-        };
-      });
-    };
-
-    return () => {
-      eventSource.close();
-    };
-  }, []);
-
+  useDownloadEvents(setTableData)
 
   const handleClose = () => setOpen(false);
 
