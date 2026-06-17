@@ -1,6 +1,6 @@
 "use client"
 
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material"
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "../myFlux/myFlux.types";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -29,9 +29,9 @@ const TableMy = ({ headers, data }: TableResponseApi<ProcessoMyflux>) => {
                         ))
                         }
                         <TableCell sx={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                }}>Status</TableCell>
+                            color: "white",
+                            fontWeight: "bold",
+                        }}>Status</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -49,21 +49,25 @@ const TableMy = ({ headers, data }: TableResponseApi<ProcessoMyflux>) => {
                             <TableCell >
                                 {row.Id}
                             </TableCell>
-                            {row.status === "pendente" && (
-                                <MoreHorizIcon />
-                            )}
+                            <TableCell>
+                                <Box component="span">
+                                    {row.status === "pendente" && (
+                                        <MoreHorizIcon />
+                                    )}
 
-                            {row.status === "baixando" && (
-                                <DownloadingIcon color="warning"/>
-                            )}
+                                    {row.status === "baixando" && (
+                                        <DownloadingIcon color="warning" />
+                                    )}
 
-                            {row.status === "concluido" && (
-                                <CheckCircleIcon color="success"/>
-                            )}
+                                    {row.status === "concluido" && (
+                                        <CheckCircleIcon color="success" />
+                                    )}
 
-                            {row.status === "erro" && (
-                                <ErrorIcon color="error"/>
-                            )}
+                                    {row.status === "erro" && (
+                                        <ErrorIcon color="error" />
+                                    )}
+                                </Box>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

@@ -13,8 +13,8 @@ import {
   TextField,
   Typography,
   Paper,
+  Chip,
 } from "@mui/material";
-import LoginIcon from "@mui/icons-material/Login";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -28,6 +28,7 @@ import TableMy from "./components/table";
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "./myFlux/myFlux.types";
 import { useDownloadEvents } from "./myFlux/integrations.myflux.useDownLoadEvents";
+import { CardIntegrations } from "./components/cardIntegrations";
 
 const IntegrationsPage = () => {
   const style = {
@@ -58,8 +59,6 @@ const IntegrationsPage = () => {
   useDownloadEvents(setTableData)
 
   const handleClose = () => setOpen(false);
-
-  const handleOpen = () => setOpen(true);
 
   const handleTogglePassword = () => {
     setVisiblePassword((prev) => !prev)
@@ -109,89 +108,37 @@ const IntegrationsPage = () => {
         <Typography variant="h4" textAlign={"center"}>
           Integrações
         </Typography>
+        <Typography variant="h6" textAlign={"center"}>
+          Conecte-se aos sistemas externos do portal
+        </Typography>
         <Grid container m={2} spacing={2}>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Card
-              sx={{
-                backgroundColor: "#3348e2",
-                display: "flex",
-                borderRadius: 10,
-                padding: "10px",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <CardMedia
-                component="img"
-                image="/assets/icons/logo_myflux.png"
-                alt="Myflux"
-                sx={{
-                  width: 150,
-                  height: 150,
-                  objectFit: "contain",
-                  margin: "4px",
-                }}
-              />
-              <Box>
-                <CardContent>
-                  <Typography variant="h4" textAlign={"center"} color={"#fff"}>
-                    Myflux
-                  </Typography>
-                  <Typography variant="body1" color={"#fff"}>
-                    Integração com o Myflux para download de pagamentos em lote.
-                  </Typography>
-                </CardContent>
-                {connected ? (
-                  <CardActions
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Button
-                      size="large"
-                      variant="contained"
-                      color="success"
-                      startIcon={<TaskAltIcon />}
-                      sx={{ borderRadius: 10, px: 4, py: 1 }}
-                      onClick={handleOpen}
-                    >
-                      Conectado
-                    </Button>
-                  </CardActions>
-                ) : (
-                  <CardActions
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Button
-                      size="large"
-                      variant="contained"
-                      color="primary"
-                      startIcon={<LoginIcon />}
-                      sx={{ borderRadius: 10, px: 4, py: 1 }}
-                      onClick={handleOpen}
-                    >
-                      Login
-                    </Button>
-                  </CardActions>
-                )}
-              </Box>
-            </Card>
+            <CardIntegrations connected={connected} onOpen={() => setOpen(true)} />
           </Grid>
         </Grid>
       </Box>
       <Divider sx={{ my: 4 }} />
       {connected ? (
-        <>
+        <Paper
+        elevation={3}
+          sx={{
+            p: 4,
+            m: 2,
+            borderRadius: 4,
+            textAlign: "center",
+          }}
+        >
+          <UploadFileIcon sx={{ fontSize: 50 }} />
+          <Typography variant="h6">
+            Upload da Planilha
+          </Typography>
+          <Typography color="text.secondary">
+            Selecione o arquivo XLSX para processar
+          </Typography>
           <Button
+            disabled={tableData ? true : false}
             variant="contained"
             component="label"
-            startIcon={<UploadFileIcon />}
             sx={{
               borderRadius: 4,
               px: 4,
@@ -205,7 +152,25 @@ const IntegrationsPage = () => {
             Selecionar Arquivo
             <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
           </Button>
-        </>
+           <Button
+            disabled={tableData ? false : true}
+            variant="contained"
+            component="label"
+            onClick={setDownload}
+            sx={{
+              borderRadius: 4,
+              px: 4,
+              py: 1.5,
+              textTransform: "none",
+              fontWeight: 600,
+              boxShadow: 3,
+              margin: 2
+            }}
+          >
+            Download Arquivos
+            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+          </Button>
+        </Paper>
       ) : null}
       <Modal
         open={open}
@@ -279,7 +244,6 @@ const IntegrationsPage = () => {
           </Paper>
         </Box>
       )}
-      <Button onClick={setDownload} variant="contained"> Download </Button>
     </>
   );
 };
