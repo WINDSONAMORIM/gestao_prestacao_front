@@ -2,14 +2,27 @@ import { useEffect } from "react";
 import { ProcessoMyflux } from "./myFlux.types";
 import { TableResponseApi } from "@/types/apiResponse";
 
-export const useDownloadEvents = (
-  setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux> | null>>
+interface UseDownloadEventsProps{
+  setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux>| null>>;
+  connected: boolean
+}
+
+export const useDownloadEvents = ({setTableData,connected}:UseDownloadEventsProps
+  // setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux> | null>>,connected: boolean
 ) => {
   useEffect(() => {
+    console.log("HOOK connected", connected);
+    if (!connected) return
+
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, "");
     const eventSource = new EventSource(`${baseUrl}/downloadProcess/events`);
 
+    eventSource.onopen = () => {
+    console.log("SSE conectado");
+  };
+
     eventSource.onmessage = (event) => {
+      console.log("Mensagem SSE:", event.data);
       const data = JSON.parse(event.data);
 
       setTableData((old) => {
@@ -34,5 +47,5 @@ export const useDownloadEvents = (
     return () => {
       eventSource.close();
     };
-  }, [setTableData]); 
+  }, [connected,setTableData]); 
 };

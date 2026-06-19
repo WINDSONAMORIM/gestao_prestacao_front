@@ -56,7 +56,13 @@ const IntegrationsPage = () => {
   const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null)
   const [token, setToken] = useState("")
 
-  useDownloadEvents(setTableData)
+  useEffect(() => {
+  console.log("CONNECTED MUDOU em Page:", connected);
+  }, [connected]);
+
+  useDownloadEvents({connected,setTableData})
+
+  console.log("PAGE connected", connected);
 
   const handleClose = () => setOpen(false);
 
@@ -66,13 +72,16 @@ const IntegrationsPage = () => {
 
   const handleConection = async () => {
     const result = await getToken(username, password);
-    setToken(result.data.token)
-    console.log(token)
+    // console.log(token)
     if (result.statusCode === 200) {
+      console.log("ANTES", connected);
+      setToken(result.data.token)
       setConnected(true)
+      console.log("DEPOIS", connected);
       setOpen(false)
     }
   }
+
 
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -87,6 +96,7 @@ const IntegrationsPage = () => {
   };
 
   const setDownload = async () => {
+    console.log("setDownload",connected)
     if (!tableData) return
     const blob = await downloadProcess(tableData.data, token);
     const url = window.URL.createObjectURL(blob);
@@ -168,7 +178,6 @@ const IntegrationsPage = () => {
             }}
           >
             Download Arquivos
-            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
           </Button>
         </Paper>
       ) : null}
