@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ProcessoMyflux } from "./myFlux.types";
 import { TableResponseApi } from "@/types/apiResponse";
 
@@ -10,9 +10,15 @@ interface UseDownloadEventsProps{
 export const useDownloadEvents = ({setTableData,connected}:UseDownloadEventsProps
   // setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux> | null>>,connected: boolean
 ) => {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // Define como true após a montagem inicial no cliente
+  }, []);
+
   useEffect(() => {
     console.log("HOOK connected", connected);
-    if (!connected) return
+      if (!connected || !isClient) return;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, "");
     const eventSource = new EventSource(`${baseUrl}/downloadProcess/events`);
