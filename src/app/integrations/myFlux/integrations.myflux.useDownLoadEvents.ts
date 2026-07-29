@@ -1,50 +1,82 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ProcessoMyflux } from "./myFlux.types";
 import { TableResponseApi } from "@/types/apiResponse";
 
-interface UseDownloadEventsProps{
-  setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux>| null>>;
-  connected: boolean
+interface UseDownloadEventsProps {
+  setTableData: React.Dispatch<
+    React.SetStateAction<TableResponseApi<ProcessoMyflux> | null>
+  >;
+  connected: boolean;
 }
 
-export const useDownloadEvents = ({setTableData,connected}:UseDownloadEventsProps
-  // setTableData: React.Dispatch<React.SetStateAction<TableResponseApi<ProcessoMyflux> | null>>,connected: boolean
-) => {
-  const [isClient, setIsClient] = useState(false);
+export const useDownloadEvents = ({
+  setTableData,
+  connected,
+}: UseDownloadEventsProps) => {
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   useEffect(() => {
-    setIsClient(true); // Define como true após a montagem inicial no cliente
-  }, []);
-
-  useEffect(() => {
-    console.log("HOOK connected", connected);
-      if (!connected || !isClient) return;
+    if (!connected) return;
 
     const baseUrl = process.env.NEXT_PUBLIC_BASE_API_URL?.replace(/\/$/, "");
+    if (!baseUrl) {
+      console.error("NEXT_PUBLIC_BASE_API_URL não está definido");
+      return;
+    }
+
     const eventSource = new EventSource(`${baseUrl}/downloadProcess/events`);
 
+    eventSourceRef.current = eventSource;
     eventSource.onopen = () => {
-    console.log("SSE conectado");
-  };
-
-    eventSource.onmessage = (event) => {
-      console.log("Mensagem SSE:", event.data);
-      const data = JSON.parse(event.data);
-
-      setTableData((old) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          data: old.data.map((item) =>
-            item.Id === data.processoId
-              ? { ...item, status: data.status }
-              : item
-          ),
-        };
-      });
+      console.log("SSE conectado");
     };
 
+    eventSource.addEventListener("progress", (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+
+        setTableData((old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            data: old.data.map((item) =>
+              item.Id === data.processoId
+                ? { ...item, status: data.status }
+                : item,
+            ),
+          };
+        });
+      } catch (error) {
+        console.error("Erro no evento progress:", error);
+      }
+    });
+
+    eventSource.addEventListener("validation", (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+
+          console.log("Validation:", data);
+
+
+        setTableData((old) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            data: old.data.map((item) =>
+              item.Id === data.processoId
+            ? { ...item, validaPedido: data.validaPedido }
+            : item,
+          ),
+        };
+        
+        });
+
+      } catch (error) {
+        console.error("Erro no evento validation:", error);
+      }
+    });
     eventSource.onerror = (err) => {
       console.error("Erro na conexão SSE:", err);
       eventSource.close();
@@ -53,5 +85,5 @@ export const useDownloadEvents = ({setTableData,connected}:UseDownloadEventsProp
     return () => {
       eventSource.close();
     };
-  }, [connected,setTableData]); 
+  }, [connected, setTableData]);
 };

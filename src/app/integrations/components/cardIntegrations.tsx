@@ -4,12 +4,15 @@ import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } fr
 import LoginIcon from "@mui/icons-material/Login";
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
 
-interface CardIntegrationsProps{
-    connected : boolean;
-    onOpen: () => void;
+interface CardIntegrationsProps {
+  connected: boolean;
+  onOpen: () => void;
+  client: string;
+  description: string;
+  image?: string;
 }
 
-export const CardIntegrations = ({connected, onOpen}: CardIntegrationsProps) => {
+export const CardIntegrations = ({connected, onOpen, client, description, image}: CardIntegrationsProps) => {
 
     return (
         <Card sx={{
@@ -26,8 +29,8 @@ export const CardIntegrations = ({connected, onOpen}: CardIntegrationsProps) => 
         >
             <CardMedia
                 component="img"
-                image="/assets/icons/logo_myflux.png"
-                alt="Myflux"
+                image={image || "/assets/icons/logo_myflux.png"}
+                alt={client}
                 sx={{
                     width: 150,
                     height: 150,
@@ -38,10 +41,10 @@ export const CardIntegrations = ({connected, onOpen}: CardIntegrationsProps) => 
             <Box>
                 <CardContent>
                     <Typography variant="h4" textAlign={"center"} color={"#fff"}>
-                        Myflux
+                        {client}
                     </Typography>
                     <Typography variant="body1" color={"#fff"}>
-                        Integração com o Myflux para download de pagamentos em lote.
+                       {description}
                     </Typography>
                 </CardContent>
                     <CardActions

@@ -2,90 +2,74 @@
 import {
   Box,
   Button,
-  IconButton,
-  Card,
-  CardActions,
-  CardContent,
   Divider,
-  CardMedia,
   Grid,
-  Modal,
-  TextField,
   Typography,
   Paper,
-  Chip,
 } from "@mui/material";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 
-import { useEffect, useState } from "react";
-import Image from "next/image";
-import { downloadProcess, getToken, previewTable } from "./myFlux/integrations.myflux.service";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
+
+import { useState } from "react";
+import {
+  downloadProcess,
+  getToken,
+  previewTable,
+} from "./myFlux/integrations.myflux.service";
 import TableMy from "./components/table";
 import { TableResponseApi } from "@/types/apiResponse";
 import { ProcessoMyflux } from "./myFlux/myFlux.types";
 import { useDownloadEvents } from "./myFlux/integrations.myflux.useDownLoadEvents";
 import { CardIntegrations } from "./components/cardIntegrations";
+import { Client, clients } from "./clients";
+import { ModalIntegrations } from "./components/modalIntegrations";
 
-const IntegrationsPage = () => {
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    borderRadius: '20px',
-    boxShadow: 24,
-    p: 4,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItens: 'center',
-    justifyContent: 'center'
-  };
+const IntegrationsPage = () => {  
 
   const [open, setOpen] = useState(false);
-  const [visiblePassword, setVisiblePassword] = useState(true);
-  const [connected, setConnected] = useState(false);
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null)
-  const [token, setToken] = useState("")
+  const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client|null>(null);
+  const [clientsState, setClientsState] = useState(clients);
 
-  useEffect(() => {
-  console.log("CONNECTED MUDOU em Page:", connected);
-  }, [connected]);
+  const hasConnected = clientsState.some(c=>c.connected)
 
-  useDownloadEvents({connected,setTableData})
+  const handleCheck = (id: string, checked: boolean) => {
+    setTableData((prev) => {
+      if (!prev) return prev;
 
-  console.log("PAGE connected", connected);
+      return {
+        ...prev,
+        data: prev.data.map((item) =>
+          item.Id === id ? { ...item, check: checked } : item,
+        ),
+      };
+    });
+  };
+
+  const myflux = clientsState.find((c) => c.id === 1);
+
+  useDownloadEvents({ connected: myflux?.token ? true : false, setTableData });
 
   const handleClose = () => setOpen(false);
 
-  const handleTogglePassword = () => {
-    setVisiblePassword((prev) => !prev)
-  }
+  const handleClient = (client: Client) => {
+    setSelectedClient(client);
+    setOpen(true);
+  };
 
-  const handleConection = async () => {
-    const result = await getToken(username, password);
-    // console.log(token)
-    if (result.statusCode === 200) {
-      console.log("ANTES", connected);
-      setToken(result.data.token)
-      setConnected(true)
-      console.log("DEPOIS", connected);
-      setOpen(false)
-    }
-  }
+  const onConection = async ({username,password, client}:{username:string;password: string, client:Client}) => {
+    console.log(client)
+    try {
+      const result = await getToken({ username, password });
+      setOpen(false);
+      setClientsState(prev=>prev.map(c=> c.id ===client.id?{...c, connected:true, token:result.data.token}:c))
+    } catch (error) {
+      console.error("Error connecting:", error);
+      return;
+    }  
+  };
 
-
-  const handleFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
@@ -96,9 +80,14 @@ const IntegrationsPage = () => {
   };
 
   const setDownload = async () => {
-    console.log("setDownload",connected)
-    if (!tableData) return
-    const blob = await downloadProcess(tableData.data, token);
+    if (!tableData) return;
+    tableData.data.map((m)=>{
+      if(m.check===true){
+      console.log(m.Id)
+    }})
+    console.log("clientsState:",clientsState)
+    if(!myflux?.token)return""
+    const blob = await downloadProcess(tableData.data, myflux?.token);
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
 
@@ -110,7 +99,7 @@ const IntegrationsPage = () => {
     link.remove();
 
     window.URL.revokeObjectURL(url);
-  }
+  };
 
   return (
     <>
@@ -122,15 +111,23 @@ const IntegrationsPage = () => {
           Conecte-se aos sistemas externos do portal
         </Typography>
         <Grid container m={2} spacing={2}>
-          <Grid size={{ xs: 12, md: 3 }}>
-            <CardIntegrations connected={connected} onOpen={() => setOpen(true)} />
-          </Grid>
+          {clientsState.map((c) => (
+            <Grid key={c.id} size={{ xs: 12, md: 3 }}>
+              <CardIntegrations
+                connected={c.connected}
+                onOpen={() => handleClient(c)}
+                client={c.name}
+                description={c.description}
+                image={c.image}
+              />
+            </Grid>
+          ))}
         </Grid>
       </Box>
       <Divider sx={{ my: 4 }} />
-      {connected ? (
+      {hasConnected ? (
         <Paper
-        elevation={3}
+          elevation={3}
           sx={{
             p: 4,
             m: 2,
@@ -139,9 +136,7 @@ const IntegrationsPage = () => {
           }}
         >
           <UploadFileIcon sx={{ fontSize: 50 }} />
-          <Typography variant="h6">
-            Upload da Planilha
-          </Typography>
+          <Typography variant="h6">Upload da Planilha</Typography>
           <Typography color="text.secondary">
             Selecione o arquivo XLSX para processar
           </Typography>
@@ -156,13 +151,18 @@ const IntegrationsPage = () => {
               textTransform: "none",
               fontWeight: 600,
               boxShadow: 3,
-              margin: 2
+              margin: 2,
             }}
           >
             Selecionar Arquivo
-            <input hidden type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+            <input
+              hidden
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileChange}
+            />
           </Button>
-           <Button
+          <Button
             disabled={tableData ? false : true}
             variant="contained"
             component="label"
@@ -174,72 +174,22 @@ const IntegrationsPage = () => {
               textTransform: "none",
               fontWeight: 600,
               boxShadow: 3,
-              margin: 2
+              margin: 2,
             }}
           >
             Download Arquivos
           </Button>
         </Paper>
       ) : null}
-      <Modal
+      <ModalIntegrations
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Image
-            width={200}
-            height={200}
-            src="/assets/icons/logo_myflux.png"
-            alt="Myflux Logo"
-            style={{ display: "block", margin: "0 auto", padding: "2px" }}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              padding: "10px",
-            }}
-          >
-            <AccountCircleIcon
-              sx={{ marginRight: "20px", marginLeft: "5px" }}
-            />
-            <TextField label="Usuario" variant="standard" value={username} onChange={(e) => setUsername(e.target.value)} fullWidth />
-          </Box>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "flex-end",
-              justifyContent: "center",
-              padding: "10px",
-            }}
-          >
-            <IconButton
-              onClick={handleTogglePassword}
-              sx={{ marginRight: "10px" }}
-            >
-              {visiblePassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-            </IconButton>
-            <TextField
-              label="Senha"
-              variant="standard"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              fullWidth
-              type={visiblePassword ? "password" : "text"}
-            />
-          </Box>
-          <Button onClick={handleConection}>Conectar</Button>
-        </Box>
-      </Modal>
+        handleConection={onConection}
+        client = {selectedClient}
+      />
+      
       {tableData && (
-        <Box
-          m={4}
-          display="flex"
-          justifyContent="center"
-        >
+        <Box m={4} display="flex" justifyContent="center">
           <Paper
             elevation={3}
             sx={{
@@ -249,12 +199,16 @@ const IntegrationsPage = () => {
               overflow: "hidden",
             }}
           >
-            <TableMy headers={tableData.headers} data={tableData.data} />
+            <TableMy
+              headers={tableData.headers}
+              data={tableData.data}
+              onCheck={handleCheck}
+            />
           </Paper>
         </Box>
       )}
     </>
   );
-};
+}; 
 
 export default IntegrationsPage;

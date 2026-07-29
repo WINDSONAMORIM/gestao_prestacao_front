@@ -9,3 +9,11 @@ export interface TableResponseApi<T>{
   headers: string[];
   data: T[]
 }
+
+export interface AxiosError {
+  path: string;  
+  message: string;
+  code: string;
+}
+
+export type AxiosErrorResponse = ApiResponse<AxiosError[]>;

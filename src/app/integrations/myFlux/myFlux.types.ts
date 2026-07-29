@@ -5,6 +5,8 @@ export interface ProcessoMyflux{
           | "baixando"
           | "concluido"
           | "erro";
+    validaPedido?:boolean;  
+    check:boolean;    
 }
 
 export interface IconProcessoMyflux {
