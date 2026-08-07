@@ -24,14 +24,15 @@ import { CardIntegrations } from "./components/cardIntegrations";
 import { Client, clients } from "./clients";
 import { ModalIntegrations } from "./components/modalIntegrations";
 
-const IntegrationsPage = () => {  
+const IntegrationsPage = () => {
 
   const [open, setOpen] = useState(false);
   const [tableData, setTableData] = useState<TableResponseApi<ProcessoMyflux> | null>(null);
-  const [selectedClient, setSelectedClient] = useState<Client|null>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clientsState, setClientsState] = useState(clients);
+  const [loadingDownload, setLoadingDownload] = useState(false);
 
-  const hasConnected = clientsState.some(c=>c.connected)
+  const hasConnected = clientsState.some(c => c.connected)
 
   const handleCheck = (id: string, checked: boolean) => {
     setTableData((prev) => {
@@ -57,16 +58,16 @@ const IntegrationsPage = () => {
     setOpen(true);
   };
 
-  const onConection = async ({username,password, client}:{username:string;password: string, client:Client}) => {
+  const onConection = async ({ username, password, client }: { username: string; password: string, client: Client }) => {
     console.log(client)
     try {
       const result = await getToken({ username, password });
       setOpen(false);
-      setClientsState(prev=>prev.map(c=> c.id ===client.id?{...c, connected:true, token:result.data.token}:c))
+      setClientsState(prev => prev.map(c => c.id === client.id ? { ...c, connected: true, token: result.data.token } : c))
     } catch (error) {
       console.error("Error connecting:", error);
       return;
-    }  
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,25 +81,31 @@ const IntegrationsPage = () => {
   };
 
   const setDownload = async () => {
-    if (!tableData) return;
-    tableData.data.map((m)=>{
-      if(m.check===true){
-      console.log(m.Id)
-    }})
-    console.log("clientsState:",clientsState)
-    if(!myflux?.token)return""
-    const blob = await downloadProcess(tableData.data, myflux?.token);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    if (!tableData || !myflux?.token) return;
+    try {
+      setLoadingDownload(true)
+      const processSelected = tableData.data.filter(m => m.check)
+      for (const processo of processSelected) {
+        const blob = await downloadProcess(processo, myflux?.token);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
 
-    link.href = url;
-    link.download = "processos.zip";
+        link.href = url;
+        link.download = `${processo.Seq}_${processo.Id}.zip`;
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
-    window.URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoadingDownload(false)
+    }
   };
 
   return (
@@ -163,7 +170,7 @@ const IntegrationsPage = () => {
             />
           </Button>
           <Button
-            disabled={tableData ? false : true}
+            disabled={!tableData || loadingDownload}
             variant="contained"
             component="label"
             onClick={setDownload}
@@ -177,7 +184,7 @@ const IntegrationsPage = () => {
               margin: 2,
             }}
           >
-            Download Arquivos
+            {loadingDownload ? "Preparando download..." : "Download Arquivos"}
           </Button>
         </Paper>
       ) : null}
@@ -185,9 +192,9 @@ const IntegrationsPage = () => {
         open={open}
         onClose={handleClose}
         handleConection={onConection}
-        client = {selectedClient}
+        client={selectedClient}
       />
-      
+
       {tableData && (
         <Box m={4} display="flex" justifyContent="center">
           <Paper
@@ -209,6 +216,6 @@ const IntegrationsPage = () => {
       )}
     </>
   );
-}; 
+};
 
 export default IntegrationsPage;

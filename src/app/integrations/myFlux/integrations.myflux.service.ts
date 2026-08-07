@@ -62,17 +62,30 @@ export const previewTable = async (
 };
 
 export const downloadProcess = async (
-  processos: ProcessoMyflux[],
+  processos: ProcessoMyflux,
   token: string,
 ): Promise<Blob> => {
-  const response = await connection.post(`/downloadProcess`, processos, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    responseType: "blob",
-  });
-  
-  console.log(response)
+  try {
+    const response = await connection.post(`/downloadProcess`, processos, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      responseType: "blob",
+    });
 
-  return response.data;
+    console.log(response)
+
+    return response.data;
+  } catch (err) {
+    console.error(err);
+
+    if (axios.isAxiosError(err)) {
+      console.log("message", err.message);
+      console.log("code", err.code);
+      console.log("status", err.response?.status);
+      console.log("data", err.response?.data);
+    }
+
+    throw err;
+  }
 };
