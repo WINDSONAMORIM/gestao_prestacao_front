@@ -34,18 +34,25 @@ const IntegrationsPage = () => {
 
   const hasConnected = clientsState.some(c => c.connected)
 
-  const handleCheck = (id: string, checked: boolean) => {
-    setTableData((prev) => {
-      if (!prev) return prev;
+const handleCheck = (id: string | number, checked: boolean) => {
+  setTableData((previousData) => {
+    if (!previousData) {
+      return previousData;
+    }
 
-      return {
-        ...prev,
-        data: prev.data.map((item) =>
-          item.Id === id ? { ...item, check: checked } : item,
-        ),
-      };
-    });
-  };
+    return {
+      ...previousData,
+      data: previousData.data.map((item) =>
+        String(item.Id) === String(id)
+          ? {
+              ...item,
+              check: checked,
+            }
+          : item,
+      ),
+    };
+  });
+};
 
   const myflux = clientsState.find((c) => c.id === 1);
 
@@ -77,16 +84,21 @@ const IntegrationsPage = () => {
 
     const result = await previewTable(file);
 
-    setTableData(result);
+    setTableData({...result, data: result.data.map((item) => ({ ...item, check: true }))});
   };
 
   const setDownload = async () => {
+    console.log("Clicado Download")
     if (!tableData || !myflux?.token) return;
+    console.log(tableData.data)
+    const processSelected = tableData.data.filter(m => m.check)
     try {
       setLoadingDownload(true)
-      const processSelected = tableData.data.filter(m => m.check)
+      
+      console.log(processSelected)
       for (const processo of processSelected) {
         const blob = await downloadProcess(processo, myflux?.token);
+        console.log("Blob:", blob);
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement("a");
 

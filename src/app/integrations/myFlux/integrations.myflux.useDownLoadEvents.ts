@@ -56,8 +56,7 @@ export const useDownloadEvents = ({
       try {
         const data = JSON.parse(event.data);
 
-          console.log("Validation:", data);
-
+        console.log("Validation:", data);
 
         setTableData((old) => {
           if (!old) return old;
@@ -66,13 +65,19 @@ export const useDownloadEvents = ({
             ...old,
             data: old.data.map((item) =>
               item.Id === data.processoId
-            ? { ...item, validaPedido: data.validaPedido }
-            : item,
-          ),
-        };
-        
+                ? {
+                    ...item,
+                    ...(data.validaPedido !== undefined && {
+                      validaPedido: data.validaPedido,
+                    }),
+                    ...(data.validaValor !== undefined && {
+                      validaValor: data.validaValor,
+                    }),
+                  }
+                : item,
+            ),
+          };
         });
-
       } catch (error) {
         console.error("Erro no evento validation:", error);
       }

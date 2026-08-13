@@ -7,14 +7,15 @@ import ErrorIcon from "@mui/icons-material/Error";
 import PendingIcon from '@mui/icons-material/Pending';
 import DownloadingIcon from '@mui/icons-material/Downloading';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { DataGrid, GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridRowsProp, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 
 type TableMyProps = TableResponseApi<ProcessoMyflux> & {
   onCheck : (id: string, checked: boolean)=>void; 
 }
 
 const TableMy = ({ headers, data, onCheck }: TableMyProps) => {
-  console.log(headers)
+  // console.log("headers:", headers)
+  // console.log("data:", data)
   const columns: GridColDef[] = [
   ...headers
   .filter((h)=> h && h.trim() !=="")
@@ -26,12 +27,12 @@ const TableMy = ({ headers, data, onCheck }: TableMyProps) => {
   {
     field: "status",
     headerName: "Status",
-    width: 120,
+    width: 150,
     sortable: false,
 
     renderCell: (params) => {
-      console.log("STATUS:", params.row);
-      console.log("VALUE:", params.value);
+      // console.log("STATUS:", params.row);
+      // console.log("VALUE:", params.value);
       switch (params.value) {
         case "pendente":          
           return <Chip icon={<PendingIcon color="disabled" />}label="Pendente"></Chip> 
@@ -53,13 +54,20 @@ const TableMy = ({ headers, data, onCheck }: TableMyProps) => {
     renderCell: (params) => (params.value ? "Sim" : "Não"),
   },
   {
+    field: "validaValor",
+    headerName: "Valida Valor",
+    width: 150,
+    renderCell: (params) => (params.value ? "Sim" : "Não"),
+  },
+  {
     field: "check",
     headerName: "Selecionar",
-    width: 120,
-    
-    renderCell: (params) => (
+    width: 150,  
+    sortable: false,
+    filterable: false,  
+    renderCell: (params: GridRenderCellParams<ProcessoMyflux>) => (
       <Checkbox
-        checked={params.row.check}
+        checked={Boolean(params.row.check)}
         onChange={(e) =>
           onCheck(params.row.Id, e.target.checked)
         }
@@ -67,18 +75,21 @@ const TableMy = ({ headers, data, onCheck }: TableMyProps) => {
     ),
   },
 ];
+// console.log("columns:", columns)
   const rows: GridRowsProp = data.map((row) => ({
     ...row,
     id: row.Seq,
     status: row.status ?? "pendente",
     validaPedido: row.validaPedido ?? false,
-    check: row.check ?? true,
+    validaValor: row.validaValor ?? false,
+    check: Boolean(row.check),
+    
     
 }));
-  rows.map((m=>console.log("Row:",m)))
+  // rows.map((m=>console.log("Row:",m)))
      return (
    <>
-       <DataGrid columns={columns} rows={rows} pageSizeOptions={[5,10,20,50]}initialState={{pagination:{paginationModel:{pageSize:10}}}} sx={{
+       <DataGrid columns={columns} rows={rows} disableRowSelectionOnClick pageSizeOptions={[5,10,20,50]}initialState={{pagination:{paginationModel:{pageSize:10}}}} sx={{
     border: 0,
     "& .MuiDataGrid-columnHeaders": {
       backgroundColor: "primary.main",
@@ -89,31 +100,21 @@ const TableMy = ({ headers, data, onCheck }: TableMyProps) => {
     "& .MuiDataGrid-columnHeader": {
       backgroundColor: "primary.main",
     },
-
-    // TEXTO HEADER
     "& .MuiDataGrid-columnHeaderTitle": {
       fontWeight: "bold",
     },
-     // ÍCONE SORT
     "& .MuiDataGrid-sortIcon": {
       color: "primar.main",
     },
-
-    // LINHAS ZEBRADAS
     "& .MuiDataGrid-row:nth-of-type(odd)": {
       backgroundColor: "#f5f5f5",
     },
-
     "& .MuiDataGrid-row:nth-of-type(even)": {
       backgroundColor: "#ffffff",
     },
-
-    // HOVER
     "& .MuiDataGrid-row:hover": {
       backgroundColor: "#dbeafe",
     },
-
-    // CÉLULAS
     "& .MuiDataGrid-cell": {
       borderBottom: "1px solid #e0e0e0",
     },

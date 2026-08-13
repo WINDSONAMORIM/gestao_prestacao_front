@@ -6,6 +6,7 @@ export interface ProcessoMyflux{
           | "concluido"
           | "erro";
     validaPedido?:boolean;  
+    validaValor?:boolean;  
     check:boolean;    
 }
 
