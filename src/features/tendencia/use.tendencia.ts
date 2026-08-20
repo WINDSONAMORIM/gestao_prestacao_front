@@ -1,7 +1,7 @@
 import { useTheme } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ExcedenteAno, TendenciaPorGrupo } from "./tendencia.types";
-import { fetchExcedenteAno, fetchTendenciaPorGrupo, fetchTendenciaPorSubgrupoGrupo } from "./tendencia.provider";
+import { fetchExcedenteAno, fetchExcedenteMensal, fetchTendenciaPorGrupo, fetchTendenciaPorSubgrupoGrupo } from "./tendencia.provider";
 
 export const UseFinanceiroTendenciaPorGrupo = (grupoId?: string) => {
   const theme = useTheme();
@@ -42,6 +42,18 @@ export const UseFinanceiroExcendenteAno = (ano: number )=> {
     loading: isLoading,
   };
 }
+
+export const UseFinanceiroExcendenteMensal = (ano: number, mes: number) => {
+  const { data, isLoading } = useQuery<ExcedenteAno[]>({
+    queryKey: ["excedenteAno", ano, mes],
+    queryFn: () => fetchExcedenteMensal(ano, mes),
+    enabled: !!ano && !!mes
+  });
+  return {
+    data: data ?? [],
+    loading: isLoading,
+  };
+};
 
 // export function useFinanceiroVariacao() {
 //   const [data, setData] = useState<number | null>(null);

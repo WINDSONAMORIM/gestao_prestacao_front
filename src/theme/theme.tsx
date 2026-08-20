@@ -23,4 +23,10 @@ export const getTheme = (mode: "light" | "dark") =>
         paper: mode === "light" ? "#ffffff" : "#1e1e1e",
       },
     },
+    typography: {
+        fontFamily: "Roboto, Arial, sans-serif",
+        allVariants: {
+          color: mode === "light" ? "#000000" : "#ffffff",
+        },
+      },
   });

@@ -18,10 +18,14 @@ import { FiltroPeriodo, Mes } from "@/modulos/financeiro/handleTabChange";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import WifiTetheringIcon from "@mui/icons-material/WifiTethering";
 import SpeedIcon from "@mui/icons-material/Speed";
+import { Indicadores } from "./components/indicadores";
 
 const Dashboard = () => {
-  const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(null);
-  const [subGrupoSelecionado, setSubGrupoSelecionado] = useState<ResumoUI | null>(null);
+  const [grupoSelecionado, setGrupoSelecionado] = useState<ResumoUI | null>(
+    null,
+  );
+  const [subGrupoSelecionado, setSubGrupoSelecionado] =
+    useState<ResumoUI | null>(null);
   const [modo, setModo] = useState<"consolidado" | "mensal">("consolidado");
   const [mesSelecionado, setMesSelecionado] = useState<Mes | null>(null);
   const [anoSelecionado, setAnoSelecionado] = useState<number>(2026);
@@ -150,26 +154,32 @@ const Dashboard = () => {
               display: "flex",
             }}
           >
-            <CollapsibleTable modo={modo} anoSelecionado={anoSelecionado} mesSelecionado={mesSelecionado?.value ? mesSelecionado.value : 1 }/>
+            <CollapsibleTable
+              modo={modo}
+              anoSelecionado={anoSelecionado}
+              mesSelecionado={mesSelecionado?.value ? mesSelecionado.value : 1}
+            />
           </Paper>
         </Grid>
       </Grid>
-      <Grid container m={2}>
-        <Paper
-          sx={{
-            width: "100%",
-            p: 2,
-            boxShadow: 3,
-            borderRadius: 2,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Typography>TOP 5 GRUPOS EXCENDENTES</Typography>
-          <Grid size={12}>
-            <TableExcedente ano={anoSelecionado} />
-          </Grid>
-        </Paper>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          m: 2,
+          alignItems: "stretch",
+          width: "calc(100% - 32px)",
+        }}
+      >
+        <Grid size={{xs:12, md:7}}sx={{display:"flex"}}>
+          <TableExcedente
+            ano={anoSelecionado}
+            mes={mesSelecionado?.value ?? 0}
+          />
+        </Grid>
+        <Grid size={{xs:12, md:5}}sx={{display:"flex"}}>
+          <Indicadores />
+        </Grid>
       </Grid>
     </>
   );

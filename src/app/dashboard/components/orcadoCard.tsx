@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardMedia, Typography, useTheme } from "@mui/material";
 
 type OrcadoCardProps = {
   callback: { value: number | null; loading: boolean };
@@ -13,7 +13,7 @@ type OrcadoCardProps = {
 export const OrcadoCard = ({ callback, title, backgroundColor, imageSrc, icon }: OrcadoCardProps) => {
 
   const { value, loading } = callback;
-
+  const theme = useTheme();
   return (
     <Card
       sx={{
@@ -51,14 +51,14 @@ export const OrcadoCard = ({ callback, title, backgroundColor, imageSrc, icon }:
         alt="Total Orçado"
       /> */}
       <CardContent>
-        <Typography variant="h6" color="black">
+        <Typography variant="h6" color={theme.palette.text.primary}>
           {title}
         </Typography>
 
         {loading ? (
-          <Typography color="black">Carregando...</Typography>
+          <Typography color={theme.palette.text.primary}>Carregando...</Typography>
         ) : (
-          <Typography fontWeight="bold" color="black">
+          <Typography fontWeight="bold" color={theme.palette.text.primary}>
             {value?.toLocaleString("pt-BR", {
               style: "currency",
               currency: "BRL",

@@ -37,3 +37,12 @@ ApiResponse<ExcedenteAno[]>
   );
   return response.data;
 };
+
+export const getTopExcedenteMensal = async (ano: number, mes: number): Promise<
+ApiResponse<ExcedenteAno[]>
+> => {
+  const response = await connection.get(
+    `/financeiro/top-mensal-excede-orcado/${ano}/${mes}`,
+  );
+  return response.data;
+};
